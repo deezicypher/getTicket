@@ -1,0 +1,18 @@
+apiVersion: skaffold/v4beta3
+kind: Config
+manifests:
+  rawYaml:
+    - ./Infra/k8s/*.yaml
+build:
+  local:
+    push: false
+  artifacts:
+    - image: deezicypher/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: 'src/**/*.ts'
+
