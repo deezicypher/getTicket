@@ -1,21 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: auth-postgres-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: auth-postgres
   template:
     metadata:
       labels:
-        app: auth
+        app: auth-postgres
     spec:
       containers:
-        - name: auth
-          image: deezicypher/auth
+        - name: auth-postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
           env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -26,24 +33,18 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_DB
+
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: auth-postgres-srv
 spec:
   selector:
-    app: auth
+    app: auth-postgres
   ports:
-    - name: auth
+    - name: db
       protocol: TCP
-      port: 3000
-      targetPort: 3000
-
-
+      port: 5432
+      targetPort: 5432
