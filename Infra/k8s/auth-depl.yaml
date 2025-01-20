@@ -31,6 +31,26 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_DB
+            - name: ACTIVE_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: ACTIVE_TOKEN_SECRET
+            - name: ACCESS_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: ACCESS_TOKEN_SECRET
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: REFRESH_TOKEN_SECRET
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: CLIENT_URL
 
 ---
 apiVersion: v1
