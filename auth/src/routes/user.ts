@@ -1,6 +1,6 @@
 import express from 'express'
-import { validLogin, validSignup } from '../middlewares/validators'
-import { activateaccount, refreshTokenEndpoint, signin, signup } from '../controller/users'
+import { forgotPasswordValidator, resetPasswordValidator, validLogin, validSignup } from '../middlewares/validators'
+import { ResetPassword, activateaccount, forgetPassword, logout, refreshTokenEndpoint, signin, signup } from '../controller/users'
 
 const router = express.Router()
 
@@ -11,8 +11,8 @@ router.post('/api/users/signup',validSignup,signup)
 router.post('/api/users/activate', activateaccount)
 router.post('/api/users/refresh_token',refreshTokenEndpoint)
 router.post('/api/users/signin',validLogin, signin)
-router.post('/api/users/signout', (req,res)=>{
-    res.send("Sign out!!")
-})
+router.post('/api/users/forgotpassword',forgotPasswordValidator, forgetPassword)
+router.post('/api/users/resetpassword',resetPasswordValidator, ResetPassword)
+router.post('/api/users/signout', logout)
 
 export default router

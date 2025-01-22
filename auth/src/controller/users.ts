@@ -10,94 +10,102 @@ import Jwt  from "jsonwebtoken";
 const CLIENT_URL = `${process.env.CLIENT_URL}`
 
 
-export const signup = async (req:Request,res:Response)=>{
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        const firstError = errors.array().map(error => error.msg)[0];
-    res.status(422).json({
-          error: firstError
-        });
-        return;
-      }  
-    const {name,email, password} = req.body
-
-    try {
-
-
-        const q =  "SELECT * FROM users WHERE email = $1 or name = $2 "
-        pool.query(q,[email.toLowerCase(), name.toLowerCase()],(err:any, user:any) => {
-            if (err) {
-                console.error("Error executing check user exists query:", err);
-                return res.status(500).json({ error: "Internal server error" });
-              }
-
-            if (user.length > 0) {
-                if (user[0].email === email) {
-                  return res.status(400).json({ error: "Email already exists" });
-                }
-                if (user[0].username === name) {
-                  return res.status(400).json({ error: "Name already exists" });
-                }
-            
-              }
-            })
-            const salt = bcrypt.genSaltSync(10)
-            const hashedPass = bcrypt.hashSync(password, salt)
-
-            const user = {name,email,hashedPass}
-            const active_token = generateActiveToken({user})
-            const url = `${CLIENT_URL}/verify?token=${active_token}`
-       
-
-            sendEmail(email, url,  "Verify your email address", res, email)
-            
-            
-}catch(err:any){
-  console.log(err)
-  res.status(500).json({error: err.message})
-  return
-}
-}
-
-export const activateaccount = async (req:Request, res:Response) => {
-  try{
-
-
-  const {token} = req.body
+export const signup = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
   
-  let decoded: DecodedToken;
+  if (!errors.isEmpty()) {
+    const firstError = errors.array().map(error => error.msg)[0];
+    res.status(422).json({ error: firstError });
+    return 
+  }
+
+  const { name, email, password } = req.body;
 
   try {
-    //This tells TypeScript that the result of jwt.verify() should be treated as type DecodedToken
-    decoded = <DecodedToken>Jwt.verify(token,`${process.env.ACTIVE_TOKEN_SECRET}`);
-  } catch (error) {
-    res.status(401).json({error: 'Invalid or expired token'})
-    return
-  }
- 
-  const { user } = decoded
-  if (!user) {
-    res.status(400).json({error: "Invalid Authentication"})
-    return
-  }
+    // Check if the email or name already exists in the database
+    const query = "SELECT * FROM users WHERE email = $1 OR name = $2";
+    // Use await to wait for the result of the query, ensures that the query is executed and completes before proceeding.
+    const { rows } = await pool.query(query, [email.toLowerCase(), name.toLowerCase()]);
 
-  const {name,email,hashedPass} = user
+    // If user is found, check if the email or name already exists
+    if (rows.length > 0) {
+      const user = rows[0];
+      
+      if (user.email === email) {
+         res.status(400).json({ error: "Email already exists" });
+         return
+      }
+
+      if (user.name === name) {
+         res.status(400).json({ error: "Name already exists" });
+         return
+      }
+    }
+
+    // Hash the password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPass = bcrypt.hashSync(password, salt);
+
+    // Create a new user object (without the password plain text)
+    const newUser = { name, email, password: hashedPass };
+
+// Generate an activation token for the user
+    const active_token = generateActiveToken({ user: newUser });
+    const url = `${CLIENT_URL}/verify?token=${active_token}`;
+
+    // Send a confirmation email 
+    sendEmail(email, url, "Verify your email address", res, email);
+
   
-             const saveq = "INSERT INTO USERS (name,email,password) VALUES ($1,$2,$3)"
-            pool.query(saveq,[name,email,hashedPass],(err:any, user:any) => {
-              if (err) {
-                console.error("Error executing saveq query:", err);
-                return res.status(500).json({ error: "Unable to proceed further at the moment " });
-              }
-              res.json({msg: "Account has been activated!", user:user[0]})
-              return
-            })
-          }catch(err){
-            console.log(err)
-            res.status(500).json({error:"Email may already be verified, or link is broken"})
-            return
-          }
-}
+    
+  } catch (err: any) {
+    console.error(err);
+   res.status(500).json({ error: err.message });
+   return 
+  }
+};
+
+export const activateaccount = async (req: Request, res: Response) => {
+  const { token } = req.body;
+
+  try {
+    
+    let decoded: DecodedToken;
+
+    try {
+      decoded = <DecodedToken>Jwt.verify(token, `${process.env.ACTIVE_TOKEN_SECRET}`);
+    } catch (error) {
+       res.status(401).json({ error: 'Invalid or expired token' });
+       return
+    }
+
+    // Check if the user is present in the decoded token
+    const { user } = decoded;
+
+    if (!user) {
+       res.status(400).json({ error: 'Invalid Authentication' });
+       return
+    }
+
+    const { name, email, hashedPass } = user;
+
+    // Prepare the query to save the user in the database
+    const saveQuery = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *';
+
+    // Use await to run the query and handle the response
+    const result = await pool.query(saveQuery, [name, email, hashedPass]);
+
+    // Respond with a success message and the created user
+   res.json({ msg: 'Account has been activated!', user: result.rows[0] });
+   return
+
+  } catch (err) {
+    // Catch any error that happens during the process
+    console.error(err);
+ res.status(500).json({ error: 'Email may already be verified, or the link is broken' });
+ return 
+  }
+};
 
 export const refreshTokenEndpoint = async (req: Request, res: Response) => {
   try {
@@ -123,7 +131,7 @@ export const refreshTokenEndpoint = async (req: Request, res: Response) => {
   }
 }
 
-export const resendEmail = async  (req:Request, res:Response) => (req:Request,res:Response)=>{
+export const resendEmail = async  (req:Request, res:Response) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
       const firstError = errors.array().map(error => error.msg)[0];
@@ -135,33 +143,33 @@ export const resendEmail = async  (req:Request, res:Response) => (req:Request,re
   const {name,email, password} = req.body
 
   try {
-
-
-      const q =  "SELECT * FROM users WHERE email = $1 or name = $2 "
-      pool.query(q,[email.toLowerCase(), name.toLowerCase()],(err:any, user:any) => {
-          if (err) {
-              console.error("Error executing check user exists query:", err);
-              return res.status(500).json({ error: "Internal server error" });
-            }
-
-          if (user.length > 0) {
-              if (user[0].email === email) {
-                return res.status(400).json({ error: "Email already exists" });
-              }
-              if (user[0].username === name) {
-                return res.status(400).json({ error: "Name already exists" });
-              }
-          
-            }
-          })
+    // check if the email or name exists
+    const q =  "SELECT * FROM users WHERE email = $1  "
+    
+    // use await to wait for the result of the query
+    const {rows} = await pool.query(q,[email.toLowerCase()])
+// if user is found, check if the email  exits
+    if(rows.length > 0) {
+    const user = rows[0]
+    if (user.email === email) {
+      res.status(400).json({ error: "Email already exists" });
+      return
+   }
+    }
+  // Hash the password
           const salt = bcrypt.genSaltSync(10)
           const hashedPass = bcrypt.hashSync(password, salt)
 
+          // create a user object
           const user = {name,email,hashedPass}
+
+          // create activation token with the user object
           const active_token = generateActiveToken({user})
+
+          // generate activation url
           const url = `${CLIENT_URL}/verify?token=${active_token}`
      
-
+    // send verification email
           sendEmail(email, url,  "Verify your email address", res, email)
           
           
@@ -172,7 +180,7 @@ export const resendEmail = async  (req:Request, res:Response) => (req:Request,re
 }
 }
 
-export const signin =(req:Request, res:Response) => {
+export const signin = async (req:Request, res:Response) => {
   const {email,password} = req.body
   const errors = validationResult(req);
 
@@ -185,25 +193,36 @@ export const signin =(req:Request, res:Response) => {
     });
     return;
   }
+ 
   try{
+    // check if the user exists
     const q = "SELECT * FROM users WHERE email = $1"
-    pool.query(q,[email],  (err:any,user:any)=>{
-      if (err) {
-        console.error("Error executing query:", err);
-        return res.status(500).json({ error: "Internal server error" });
+
+    // use await to wait for the result of the query
+    const {rows} = await pool.query(q,[email])
+
+
+    if(rows.length === 0) {
+     res.status(400).json({error:"Invalid Email"})
+     return
+    }
+
+    const user = rows[0]
+
+    // check and compare password
+      const checkPassword = bcrypt.compareSync(password,user.password)
+      if(!checkPassword) {
+         res.status(404).json({error: "Invalid Password"})
+        return
       }
-      if(user.length === 0) return res.status(400).json({error:"Invalid Email"})
+      const access_token = generateAccessToken({id:user.id},res)
+    const refresh_token = generateRefreshToken({id:user.id}, res)
 
-      const checkPassword = bcrypt.compare(password,user[0].password)
-      if(!checkPassword) return res.status(404).json({error: "Invalid Password"})
-      const access_token = generateAccessToken({id:user[0].id},res)
-    const refresh_token = generateRefreshToken({id:user[0].id}, res)
-
-    return res.cookie('accesstoken',access_token,{httpOnly:true}).json({
-      user: { id:user[0]?.id,access_token,name:user[0]?.name,email:user[0]?.email,}
+     res.cookie('accesstoken',access_token,{httpOnly:true}).json({
+      user: { id:user?.id,access_token,name:user?.name,email:user?.email,}
     })
-
-    })
+    return
+    
   } catch(err:any){
     console.log(err)
     res.status(500).json({error: err.message})
@@ -212,6 +231,7 @@ export const signin =(req:Request, res:Response) => {
 }
 
 export const forgetPassword = async (req:Request, res:Response):Promise<void> => {
+ 
   const {email} = req.body;
   const errors = validationResult(req)
   if(!errors.isEmpty()){
@@ -220,21 +240,25 @@ export const forgetPassword = async (req:Request, res:Response):Promise<void> =>
     return;
   }
 try{
+  // check if user exists
   const q = "SELECT * FROM users WHERE email = $1"
-  pool.query(q,[email],(err:any, user:any) => {
-    if(err){
-      console.log(err)
-      if (err) {
-        console.error("Error executing query:", err);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-      if (user.length === 0 ) return res.status(404).json({error: "Account not found"})
-      const active_token = generateActiveToken({id:user[0].id})
-    const url = `${CLIENT_URL}/resetpassword/${active_token}`
-    ResetPass(email,url,"Reset Password",res, email)
 
-    }
-  })
+  // use await to wait for the result of the query
+  const {rows} = await pool.query(q,[email.toLowerCase()])
+  if(rows.length === 0) {
+     res.status(404).json({error:"Account not found"})
+     return
+  }
+  const user = rows[0]
+
+  // create active token with user id
+  const active_token = generateActiveToken({id:user.id})
+  // generate activation url
+
+  const url = `${CLIENT_URL}/resetpassword/${active_token}`
+  // Send Email
+  ResetPass(email,url,"Reset Password",res, email)
+
 }catch(err:any){
   console.log(err)
   res.status(500).json({error: err.message})
@@ -245,25 +269,31 @@ try{
 export const ResetPassword = async (req:Request, res:Response) => {
   try{
     const {token,password} = req.body
+    // declare decoded variable of type DecodedToken
     let decoded : DecodedToken;
 
+    // Try to verify token and assign the result to decoded variable
       decoded = <DecodedToken>Jwt.verify(token,`${process.env.ACTIVE_TOKEN_SECRET}`)
  
+      // get id from decoded
     const {id} = decoded
+
     if(!id) {
       res.status(401).json({error: "Invalid Authentication"})
       return;
     } 
 
+    //Hash the password
     const salt = bcrypt.genSaltSync(10)
     const hashedPass = bcrypt.hashSync(password, salt)
 
+    //Update user password query
     const q = 'UPDATE users SET password = $1 WHERE id = $2 '
 
-    pool.query(q,[hashedPass,id], (err:any, user:any)=>{
-      if(err) return console.log(err)
-      res.json({msg: "Password Reset Successful"})
-    })
+    // use await to wait for the result of the query
+     await pool.query(q,[hashedPass,id])
+     res.json({msg: "Password Reset Successful"})
+     return;
   }catch(err:any) {
     console.log(err)
     res.status(500).json({error: err.message})
