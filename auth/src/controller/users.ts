@@ -24,7 +24,7 @@ export const signup = async (req:Request,res:Response)=>{
     try {
 
 
-        const q =  "SELECT * FROM users WHERE email = ? or name = ? "
+        const q =  "SELECT * FROM users WHERE email = $1 or name = $2 "
         pool.query(q,[email.toLowerCase(), name.toLowerCase()],(err:any, user:any) => {
             if (err) {
                 console.error("Error executing check user exists query:", err);
@@ -45,7 +45,7 @@ export const signup = async (req:Request,res:Response)=>{
             const hashedPass = bcrypt.hashSync(password, salt)
 
             const user = {name,email,hashedPass}
-            const active_token = generateActiveToken(user)
+            const active_token = generateActiveToken({user})
             const url = `${CLIENT_URL}/verify?token=${active_token}`
        
 
@@ -74,6 +74,7 @@ export const activateaccount = async (req:Request, res:Response) => {
     res.status(401).json({error: 'Invalid or expired token'})
     return
   }
+ 
   const { user } = decoded
   if (!user) {
     res.status(400).json({error: "Invalid Authentication"})
@@ -82,7 +83,7 @@ export const activateaccount = async (req:Request, res:Response) => {
 
   const {name,email,hashedPass} = user
   
-             const saveq = "INSERT INTO USERS (`name`,`email`,`password`) VALUES (?,?,?)"
+             const saveq = "INSERT INTO USERS (name,email,password) VALUES ($1,$2,$3)"
             pool.query(saveq,[name,email,hashedPass],(err:any, user:any) => {
               if (err) {
                 console.error("Error executing saveq query:", err);
@@ -136,7 +137,7 @@ export const resendEmail = async  (req:Request, res:Response) => (req:Request,re
   try {
 
 
-      const q =  "SELECT * FROM users WHERE email = ? or name = ? "
+      const q =  "SELECT * FROM users WHERE email = $1 or name = $2 "
       pool.query(q,[email.toLowerCase(), name.toLowerCase()],(err:any, user:any) => {
           if (err) {
               console.error("Error executing check user exists query:", err);
@@ -157,7 +158,7 @@ export const resendEmail = async  (req:Request, res:Response) => (req:Request,re
           const hashedPass = bcrypt.hashSync(password, salt)
 
           const user = {name,email,hashedPass}
-          const active_token = generateActiveToken(user)
+          const active_token = generateActiveToken({user})
           const url = `${CLIENT_URL}/verify?token=${active_token}`
      
 
@@ -185,7 +186,7 @@ export const signin =(req:Request, res:Response) => {
     return;
   }
   try{
-    const q = "SELECT * FROM users WHERE email = ?"
+    const q = "SELECT * FROM users WHERE email = $1"
     pool.query(q,[email],  (err:any,user:any)=>{
       if (err) {
         console.error("Error executing query:", err);
@@ -219,7 +220,7 @@ export const forgetPassword = async (req:Request, res:Response):Promise<void> =>
     return;
   }
 try{
-  const q = "SELECT * FROM users WHERE email = ?"
+  const q = "SELECT * FROM users WHERE email = $1"
   pool.query(q,[email],(err:any, user:any) => {
     if(err){
       console.log(err)
@@ -257,7 +258,7 @@ export const ResetPassword = async (req:Request, res:Response) => {
     const salt = bcrypt.genSaltSync(10)
     const hashedPass = bcrypt.hashSync(password, salt)
 
-    const q = 'UPDATE users SET password = ? WHERE id = ? '
+    const q = 'UPDATE users SET password = $1 WHERE id = $2 '
 
     pool.query(q,[hashedPass,id], (err:any, user:any)=>{
       if(err) return console.log(err)
