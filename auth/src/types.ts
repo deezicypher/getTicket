@@ -6,6 +6,7 @@ export  interface User{
     email:string;
     password:string;
     hashedPass:string;
+    role?: string;
 }
 
 export interface DecodedToken {
@@ -14,3 +15,7 @@ export interface DecodedToken {
     iat:number;
     exp:number;
 }
+export interface ReqAuth extends Request {
+    user?: User
+  }
+  
