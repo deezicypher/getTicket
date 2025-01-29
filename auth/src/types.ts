@@ -15,7 +15,12 @@ export interface DecodedToken {
     iat:number;
     exp:number;
 }
-export interface ReqAuth extends Request {
-    user?: User
-  }
+declare global{
+    namespace Express {
+        interface Request {
+            user?: User
+        }
+    }
+}
+
   

@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import pool from "../config/db";
 import { generateAccessToken, generateActiveToken, generateRefreshToken } from "../utils/generateToken";
 import sendEmail, { ResetPass } from "../utils/sendMail";
-import { DecodedToken, ReqAuth } from "../types";
+import { DecodedToken } from "../types";
 import Jwt  from "jsonwebtoken";
 
 const CLIENT_URL = `${process.env.CLIENT_URL}`
@@ -334,7 +334,7 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
-export const currentUser = async (req:ReqAuth, res:Response) => {
+export const currentUser = async (req:Request, res:Response) => {
   const {user} = req
   
   try{

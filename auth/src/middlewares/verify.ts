@@ -1,8 +1,8 @@
-import { Response ,  NextFunction} from 'express';
+import { Response ,Request,  NextFunction} from 'express';
 import jwt from 'jsonwebtoken'
-import { ReqAuth } from '../types'
 
-export const verifyToken = (req:ReqAuth, res:Response, next:NextFunction):void => {
+
+export const verifyToken = (req:Request, res:Response, next:NextFunction):void => {
   
     const token = req.session?.accesstoken;
     if(!token) {
@@ -22,7 +22,7 @@ export const verifyToken = (req:ReqAuth, res:Response, next:NextFunction):void =
     });
 }
 
-export const verifyUser = (req:ReqAuth, res:Response, next:NextFunction) => {
+export const verifyUser = (req:Request, res:Response, next:NextFunction) => {
   verifyToken(req, res,() => {
    
       if(req.user?.id === req.query.id || req.user?.role === "ADMIN"){
@@ -35,7 +35,7 @@ export const verifyUser = (req:ReqAuth, res:Response, next:NextFunction) => {
 
 
 
-export const verifyAdmin = (req:ReqAuth, res:Response, next:NextFunction) => {
+export const verifyAdmin = (req:Request, res:Response, next:NextFunction) => {
     verifyToken(req, res,() => {
         if(req.user?.role === "ADMIN") return next()
         else return res.json(403).json("You're not an administrator")
