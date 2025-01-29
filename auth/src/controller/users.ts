@@ -6,6 +6,8 @@ import { generateAccessToken, generateActiveToken, generateRefreshToken } from "
 import sendEmail, { ResetPass } from "../utils/sendMail";
 import { DecodedToken } from "../types";
 import Jwt  from "jsonwebtoken";
+import dotenv from "dotenv"
+dotenv.config()
 
 const CLIENT_URL = `${process.env.CLIENT_URL}`
 
