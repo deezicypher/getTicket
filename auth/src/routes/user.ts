@@ -1,12 +1,11 @@
 import express from 'express'
 import { forgotPasswordValidator, resetPasswordValidator, validLogin, validSignup } from '../middlewares/validators'
-import { ResetPassword, activateaccount, forgetPassword, logout, refreshTokenEndpoint, signin, signup } from '../controller/users'
+import { ResetPassword, activateaccount, currentUser,  forgetPassword, logout, refreshTokenEndpoint, signin, signup } from '../controller/users'
+import { verifyToken } from '../middlewares/verify'
 
 const router = express.Router()
 
-router.get('/api/users/currentuser', (req,res)=>{
-    res.send("Hi There!!")
-})
+router.get('/api/users/currentuser', verifyToken, currentUser)
 router.post('/api/users/signup',validSignup,signup)
 router.post('/api/users/activate', activateaccount)
 router.post('/api/users/refresh_token',refreshTokenEndpoint)

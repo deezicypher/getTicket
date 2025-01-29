@@ -4,7 +4,7 @@ import { ReqAuth } from '../types'
 
 export const verifyToken = (req:ReqAuth, res:Response, next:NextFunction):void => {
   
-    const token = req.cookies.accesstoken;
+    const token = req.session?.accesstoken;
     if(!token) {
     res.status(401).json({msg:"You're not authenticated"})
     return

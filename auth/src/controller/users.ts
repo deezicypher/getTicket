@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import pool from "../config/db";
 import { generateAccessToken, generateActiveToken, generateRefreshToken } from "../utils/generateToken";
 import sendEmail, { ResetPass } from "../utils/sendMail";
-import { DecodedToken } from "../types";
+import { DecodedToken, ReqAuth } from "../types";
 import Jwt  from "jsonwebtoken";
 
 const CLIENT_URL = `${process.env.CLIENT_URL}`
@@ -330,5 +330,25 @@ export const logout = async (req: Request, res: Response) => {
   } catch(err:any) {
       res.status(500).json({ error: err.message });
       return 
+  }
+};
+
+export const currentUser = async (req:ReqAuth, res:Response) => {
+  const {user} = req
+  
+  try{
+    // get user query
+    const q = "SELECT * FROM users WHERE id = $1"
+ // use await to wait for the result of the query
+    const resultq = await pool.query(q,[user?.id])
+    if(resultq.rows.length === 0 ){
+      res.status(404).json({error: "User not found"})
+      return
+    }
+
+    res.json({user:resultq.rows[0]})
+  }catch(err) {
+    console.log(err)
+    res.status(500).json("Unable to proceed further")
   }
 };
