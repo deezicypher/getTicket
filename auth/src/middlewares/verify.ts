@@ -1,8 +1,6 @@
-import { Response , Request, NextFunction} from 'express';
+import { Response ,  NextFunction} from 'express';
 import jwt from 'jsonwebtoken'
-import dotenv from "dotenv";
 import { ReqAuth } from '../types'
-dotenv.config()
 
 export const verifyToken = (req:ReqAuth, res:Response, next:NextFunction):void => {
   

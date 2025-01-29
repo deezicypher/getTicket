@@ -20,6 +20,7 @@ export const signup = async (req: Request, res: Response) => {
   }
 
   const { name, email, password } = req.body;
+ 
 
   try {
     // Check if the email or name already exists in the database
@@ -68,16 +69,15 @@ export const signup = async (req: Request, res: Response) => {
 export const activateaccount = async (req: Request, res: Response) => {
   const { token } = req.body;
 
+  if(!token) {
+     res.status(400).json({error: "Token is required"})
+     return
+  }
   try {
     
     let decoded: DecodedToken;
 
-    try {
       decoded = <DecodedToken>Jwt.verify(token, `${process.env.ACTIVE_TOKEN_SECRET}`);
-    } catch (error) {
-       res.status(401).json({ error: 'Invalid or expired token' });
-       return
-    }
 
     // Check if the user is present in the decoded token
     const { user } = decoded;
@@ -87,13 +87,24 @@ export const activateaccount = async (req: Request, res: Response) => {
        return
     }
 
-    const { name, email, hashedPass } = user;
+    const { name, email, password } = user;
+
+
+    //check if user already exists
+    const userCheckQuery = 'SELECT * FROM users WHERE email = $1'
+    const userCheckResult = await pool.query(userCheckQuery,[email])
+
+    if (userCheckResult.rows.length > 0) {
+       res.status(400).json({error:"User already exists"})
+       return
+    }
+
 
     // Prepare the query to save the user in the database
     const saveQuery = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *';
 
     // Use await to run the query and handle the response
-    const result = await pool.query(saveQuery, [name, email, hashedPass]);
+    const result = await pool.query(saveQuery, [name, email, password]);
 
     // Respond with a success message and the created user
    res.json({ msg: 'Account has been activated!', user: result.rows[0] });
@@ -102,8 +113,17 @@ export const activateaccount = async (req: Request, res: Response) => {
   } catch (err) {
     // Catch any error that happens during the process
     console.error(err);
+    if(err instanceof Jwt.TokenExpiredError){
+       res.status(401).json({error: 'Token Expired'})
+       return
+    }
+    else if(err instanceof Jwt.JsonWebTokenError){
+       res.status(401).json({error: "Invalid Token"})
+       return
+    }else {
  res.status(500).json({ error: 'Email may already be verified, or the link is broken' });
  return 
+    }
   }
 };
 
@@ -121,7 +141,7 @@ export const refreshTokenEndpoint = async (req: Request, res: Response) => {
       const decoded = <DecodedToken>Jwt.verify(refresh_token, `${process.env.REFRESH_TOKEN_SECRET}`);
       
       // Generate new access token
-      const access_token = generateAccessToken({id: decoded.id}, res);
+      const access_token = generateAccessToken({id: decoded.id}, req);
       
       res.json({ access_token });
   } catch(err:any){
@@ -215,12 +235,11 @@ export const signin = async (req:Request, res:Response) => {
          res.status(404).json({error: "Invalid Password"})
         return
       }
-      const access_token = generateAccessToken({id:user.id},res)
-    const refresh_token = generateRefreshToken({id:user.id}, res)
+      // generate access token
 
-     res.cookie('accesstoken',access_token,{httpOnly:true}).json({
-      user: { id:user?.id,access_token,name:user?.name,email:user?.email,}
-    })
+      generateAccessToken({id:user.id},req)
+      
+     res.json({user: { id:user?.id,name:user?.name,email:user?.email,}})
     return
     
   } catch(err:any){
