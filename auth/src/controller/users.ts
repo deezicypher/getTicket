@@ -35,12 +35,12 @@ export const signup = async (req: Request, res: Response) => {
       const user = rows[0];
       
       if (user.email === email) {
-         res.status(400).json({ error: "Email already exists" });
+         res.status(422).json({ error: "Email already exists" });
          return
       }
 
       if (user.name === name) {
-         res.status(400).json({ error: "Name already exists" });
+         res.status(422).json({ error: "Name already exists" });
          return
       }
     }
@@ -57,8 +57,13 @@ export const signup = async (req: Request, res: Response) => {
     const url = `${CLIENT_URL}/verify?token=${active_token}`;
 
     // Send a confirmation email 
-    sendEmail(email, url, "Verify your email address", res, email);
-
+    // sendEmail(email, url, "Verify your email address", res, email,active_token);
+    res.status(201).json({
+      msg: `Confirmation Email sent to ${email}`,
+      email: email,
+      token:active_token
+  })
+  return 
   
     
   } catch (err: any) {
@@ -85,7 +90,7 @@ export const activateaccount = async (req: Request, res: Response) => {
     const { user } = decoded;
 
     if (!user) {
-       res.status(400).json({ error: 'Invalid Authentication' });
+       res.status(422).json({ error: 'Invalid Authentication' });
        return
     }
 
@@ -97,7 +102,7 @@ export const activateaccount = async (req: Request, res: Response) => {
     const userCheckResult = await pool.query(userCheckQuery,[email])
 
     if (userCheckResult.rows.length > 0) {
-       res.status(400).json({error:"User already exists"})
+       res.status(422).json({error:"User already exists"})
        return
     }
 
@@ -174,7 +179,7 @@ export const resendEmail = async  (req:Request, res:Response) => {
     if(rows.length > 0) {
     const user = rows[0]
     if (user.email === email) {
-      res.status(400).json({ error: "Email already exists" });
+      res.status(422).json({ error: "Email already exists" });
       return
    }
     }
@@ -192,7 +197,7 @@ export const resendEmail = async  (req:Request, res:Response) => {
           const url = `${CLIENT_URL}/verify?token=${active_token}`
      
     // send verification email
-          sendEmail(email, url,  "Verify your email address", res, email)
+          sendEmail(email, url,  "Verify your email address", res, email,active_token)
           
           
 } catch(err:any){
@@ -225,7 +230,7 @@ export const signin = async (req:Request, res:Response) => {
 
 
     if(rows.length === 0) {
-     res.status(400).json({error:"Invalid Email"})
+     res.status(422).json({error:"Invalid Email"})
      return
     }
 
@@ -234,7 +239,7 @@ export const signin = async (req:Request, res:Response) => {
     // check and compare password
       const checkPassword = bcrypt.compareSync(password,user.password)
       if(!checkPassword) {
-         res.status(404).json({error: "Invalid Password"})
+         res.status(401).json({error: "Invalid Password"})
         return
       }
       // generate access token

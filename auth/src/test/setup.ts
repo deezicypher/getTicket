@@ -22,8 +22,14 @@ beforeAll(async () => {
   );`);
 });
 
+
 afterAll(async () => {
   // Clean up the database after tests
   await pool.query('DROP TABLE IF EXISTS users');
   await pool.end();
 });
+
+beforeEach(async () => {
+    // Clear the users table before each test
+    await pool.query('DELETE FROM users');
+  });

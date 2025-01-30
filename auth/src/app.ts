@@ -1,14 +1,15 @@
 import express,{Request,Response,NextFunction} from "express"
 import userRoute from './routes/user'
 import cookieSession from "cookie-session"
-
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
 app.set('trust proxy', true)
 app.use(express.json())
 app.use(cookieSession({
   signed:false,
-  secure:true
+  secure: process.env.NODE_ENV !== 'test'
 }))
 
 app.use(userRoute)
