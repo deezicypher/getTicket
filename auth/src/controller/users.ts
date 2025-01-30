@@ -24,6 +24,7 @@ export const signup = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
  
 
+
   try {
     // Check if the email or name already exists in the database
     const query = "SELECT * FROM users WHERE email = $1 OR name = $2";

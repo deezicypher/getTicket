@@ -1,5 +1,6 @@
 import request from "supertest"
 import { app } from "../../app"
+import { signin } from "../../utils/test/auth-helper"
 
 
 it('returns a 201 on successful signup', async () => {
@@ -125,70 +126,16 @@ it('Fails on incorrect password', async () => {
 })
 
 it('Sets cookie after successful signup ', async () => {
-    //declare a token variable
-    let token ;
-    // call signup request and assign the result to the signupres variable
-     const signupres = await request(app)
-        .post('/api/users/signup')
-        .send({
-            name: "dave",
-            email: "davex@gmail.com",
-            password: "Wired2loop"
-          }).expect(201)
-          // Extract the token and store it in the token variable
-          token = signupres.body.token;
-
-          // call the activate account request with the token
-           await request(app)
-          .post('/api/users/activate')
-          .send({
-            token
-          })
-          .expect(200)
-          // assign the login request result to loginres
-          const loginres = await request(app)
-          .post('/api/users/signin')
-          .send({
-            email: "davex@gmail.com",
-            password: "Wired2loop"
-          }).expect(200);
-          
-          // Expect the response to have a set-cookie header, be defined
-          expect(loginres.get('Set-Cookie')).toBeDefined();
+        const cookie = await signin()
+        // Expect the response to have a set-cookie header, be defined
+        expect(cookie).toBeDefined();
 
 })
 
 it('clears the cookie after sign out', async () => {
-    //declare a token variable
-    let token ;
-    // call signup request and assign the result to the signupres variable
-     const signupres = await request(app)
-        .post('/api/users/signup')
-        .send({
-            name: "dave",
-            email: "davex@gmail.com",
-            password: "Wired2loop"
-          }).expect(201)
-          // Extract the token and store it in the token variable
-          token = signupres.body.token;
-
-          // call the activate account request with the token
-           await request(app)
-          .post('/api/users/activate')
-          .send({
-            token
-          })
-          .expect(200)
-
-          //  login 
-           await request(app)
-          .post('/api/users/signin')
-          .send({
-            email: "davex@gmail.com",
-            password: "Wired2loop"
-          }).expect(200);
-
-          // signout and assign the result to signoutres
+    // Login
+    await signin()
+    // signout and assign the result to signoutres
     const signoutres = await request(app)
     .post('/api/users/signout')
     .send({})
@@ -201,36 +148,8 @@ it('clears the cookie after sign out', async () => {
 })
 
 it('Responds with details about current user', async () => {
-    //declare a token variable
-    let token ;
-    // call signup request and assign the result to the signupres variable
-     const signupres = await request(app)
-        .post('/api/users/signup')
-        .send({
-            name: "dave",
-            email: "davex@gmail.com",
-            password: "Wired2loop"
-          }).expect(201)
-          // Extract the token and store it in the token variable
-          token = signupres.body.token;
-
-          // call the activate account request with the token
-           await request(app)
-          .post('/api/users/activate')
-          .send({
-            token
-          })
-          .expect(200)
-          
-          //  login and assign result to loginres variable
-          const loginres = await request(app)
-          .post('/api/users/signin')
-          .send({
-            email: "davex@gmail.com",
-            password: "Wired2loop"
-          }).expect(200);
-
-          const cookie = loginres.get('Set-Cookie')
+    
+          const cookie = await signin()
           if(!cookie) {
             throw new Error('Cookie not set after login')
         }
@@ -241,5 +160,5 @@ it('Responds with details about current user', async () => {
           .send()
           .expect(200) 
 
-          expect(currentuser.body.user.email).toEqual('davex@gmail.com')
+          expect(currentuser.body.user.email).toEqual('testuser@gmail.com')
 })
