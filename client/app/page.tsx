@@ -1,5 +1,8 @@
 import React from "react";
+import Header from "../components/header";
 
 export default function Page() {
-  return <h1 className="text-3xl font-bold underline">Hello, Next.js!</h1>
+  return <div className="flex flex-col">
+    <Header/>
+  </div>
 }
