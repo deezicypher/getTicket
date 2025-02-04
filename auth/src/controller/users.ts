@@ -282,7 +282,7 @@ try{
   const active_token = generateActiveToken({id:user.id})
   // generate activation url
 
-  const url = `${CLIENT_URL}/resetpassword/${active_token}`
+  const url = `${CLIENT_URL}/resetpassword?token=${active_token}`
   // Send Email
   ResetPass(email,url,"Reset Password",res, email)
 
@@ -323,7 +323,7 @@ export const ResetPassword = async (req:Request, res:Response) => {
      return;
   }catch(err:any) {
     console.log(err)
-    res.status(500).json({error: err.message})
+    res.status(500).json({error: "Token might have expired."})
     return
   }
 }
