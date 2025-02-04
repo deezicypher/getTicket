@@ -2,10 +2,11 @@
 import React, {createContext, useContext, useEffect, useState} from 'react'
 import { useQuery, useMutation } from 'react-query';
 import { useForm } from "react-hook-form";
-import { AuthContextProps, LoginFormData } from '../../types';
+import { AuthContextProps, LoginFormData, SignupFormData } from '../../types';
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation';
-
+import { postAPI } from '../../utils/fetchData';
+import Cookies from 'js-cookie'
 
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined)
@@ -17,9 +18,9 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
     const login = useMutation(
         async (data: LoginFormData) => {
           try {
-            console.log(data)
-            //const res = await postAPI('users/login', data);
-            //return res.data;
+            
+            const res = await postAPI('/api/users/signin', data);
+            return res.data;
           } catch (error: any) {
             error.response?.data?.error && toast.error(error.response?.data?.error);
             console.error('Login error:', error);
@@ -36,8 +37,26 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
         },
       );
 
+      const signup = useMutation(
+        async (data : SignupFormData) => {
+          try{
+            const res = await postAPI('api/users/signup',data);
+            return res.data
+          }catch(err:any){
+            err.response.data.error && toast.error(err.response.data.error)
+            console.log('Signup error:', err)
+          }
+        },{
+          onSuccess: async (data:any) => {
+            Cookies.set('regdata', JSON.stringify(data));
+          },
+          onError: async (error:any) => {
+            console.error('Signup error:', error);
+          }
+        }
+      )
     return (
-       <AuthContext.Provider value={{login}}>
+       <AuthContext.Provider value={{login, signup}}>
         {children}
        </AuthContext.Provider>
     )
