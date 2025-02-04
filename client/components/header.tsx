@@ -52,6 +52,8 @@ const Header = () => {
 {showCart && (
     <Cart showCart={showCart} setShowCart={setShowCart} toggle={toggle} />
 )}
+
+
     </div>
   )
 }
