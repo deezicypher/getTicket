@@ -19,7 +19,7 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
         async (data: LoginFormData) => {
           try {
             
-            const res = await postAPI('/api/users/signin', data);
+            const res = await postAPI('users/signin', data);
             return res.data;
           } catch (error: any) {
             error.response?.data?.error && toast.error(error.response?.data?.error);
@@ -40,7 +40,7 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
       const signup = useMutation(
         async (data : SignupFormData) => {
           try{
-            const res = await postAPI('api/users/signup',data);
+            const res = await postAPI('users/signup',data);
             return res.data
           }catch(err:any){
             err.response.data.error && toast.error(err.response.data.error)

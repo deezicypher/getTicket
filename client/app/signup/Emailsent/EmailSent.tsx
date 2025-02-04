@@ -14,7 +14,7 @@ const EmailSent = () => {
    
     const sendMail = useMutation(async () => {
         try{
-          const res = await postAPI('/api/users/resend-email', {
+          const res = await postAPI('users/resend-email', {
           ...regdata
       })
         return res.data
