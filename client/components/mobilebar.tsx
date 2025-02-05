@@ -14,9 +14,9 @@ const Mobilebar:FC<MobileProps> = ({toggle,setToggle}) => {
           onClick={() => setToggle(!toggle)} // Close navbar when backdrop is clicked
         ></div>
       )}
-    <div className=' z-20 top-10 p-2'>
+    <div className='absolute z-20 top-10 p-2 w-full'>
     
-        <div className={`flex items-start justify-between bg-white gap-5 p-4 text-black  rounded-md  transform transition-transform duration-300 ${
+        <div className={`flex items-start justify-between  bg-white gap-5 p-4 text-black  rounded-md  transform transition-transform duration-300 ${
           toggle ? 'translate-x-0' : '-translate-x-full'
         }`}>
     
