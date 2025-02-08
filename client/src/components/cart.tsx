@@ -1,6 +1,11 @@
-import React from 'react'
+import {Dispatch,SetStateAction,FC} from 'react'
 
-const Cart = ({toggle,showCart,setShowCart}) => {
+interface cartProps {
+    toggle:boolean;
+    showCart:boolean;
+    setShowCart: Dispatch<SetStateAction<boolean>>
+}
+const Cart:FC<cartProps> = ({showCart,setShowCart}) => {
   return (
     <div className='fixed inset-0  backdrop-blur-sm bg-black/30' onClick={() => setShowCart(!showCart)}>
         <div className='p-2 top-10 py-12 sm:top-0 sm:py-0 sm:p-0 z-20'>

@@ -1,12 +1,11 @@
-'use client'
-import React,{useState} from 'react'
-import { useMutation } from 'react-query'
+import  { useState } from 'react'
 import { useAuthContext } from '../../context/authContext'
-import Link from 'next/link'
-import Image from 'next/image'
+import { Link } from 'react-router-dom'
+import { logo } from '../../assets/images'
 
-const page = () => {
-    const [email, setEmail] = useState<string>()
+const ForgotPass = () => {
+
+    const [email, setEmail] = useState<string>('')
    const {sendPass} = useAuthContext()
 
    const onSubmit = async (e:any) => {  
@@ -16,7 +15,7 @@ const page = () => {
    
   return (
     <div className="flex flex-col items-center justify-center sm:-mt-20 min-h-screen p-4">
-   <Link href={'/'}> <Image src="/images/gett.png" alt="" width={100} height={100} /> </Link>
+  <Link to='/'><img src={logo} alt="" className=" h-10" /></Link>
     <h1  className="font-rubik font-bold text-center mt-10 text-3xl no-underline sm:text-5xl bg-gradient-to-r from-[#408ffe] to-[#1764f4] text-transparent bg-clip-text">
 Forgot Password
 </h1>
@@ -61,4 +60,5 @@ Forgot Password
   )
 }
 
-export default page
+
+export default ForgotPass

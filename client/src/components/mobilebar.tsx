@@ -1,4 +1,4 @@
-import React,{Dispatch,SetStateAction,FC} from 'react'
+import {Dispatch,SetStateAction,FC} from 'react'
 
 interface MobileProps {
     toggle:boolean;

@@ -1,6 +1,4 @@
-'use client'
-import Image from 'next/image'
-import React from 'react'
+import { girl } from "../assets/images"
 
 const Hero = () => {
   return (
@@ -23,8 +21,8 @@ const Hero = () => {
 </div>
 
 <div className='flex w-50 h-70 sm:w-max sm:h-max'>
-
-    <Image src="/images/girlt.png" alt="" height={400} width={400} />
+    
+    <img src={girl} alt="" className="" height={400} width={400} />
 
 </div>
         </div>

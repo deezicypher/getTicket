@@ -1,11 +1,12 @@
 import {FormEvent} from 'react'
 import Cookies from 'js-cookie'
 import toast from 'react-hot-toast'
-import {useMutation} from 'react-query'
+import {useMutation} from '@tanstack/react-query'
 
-import Image from 'next/image'
-import { postAPI } from '../../../../utils/fetchData'
-import Link from 'next/link'
+import { postAPI } from '../../utils/fetchData'
+import { loader, logo } from '../../assets/images'
+import { Link } from 'react-router-dom'
+
 
 
 
@@ -13,18 +14,15 @@ const EmailSent = () => {
     const userCookie = Cookies.get('regdata');
     const regdata = userCookie ? JSON.parse(userCookie) : {};
    
-    const sendMail = useMutation(async () => {
-        try{
+    const sendMail = useMutation( {
+      mutationFn: async () => {
+
           const res = await postAPI('users/resend-email', {
           ...regdata
       })
         return res.data
-      }catch(error:any){
-        toast.error(error.response?.data?.error);
-        throw error
-       
-      }
-    },{
+ 
+    },
         onMutate: () => {
             toast.loading('Sending email....',{
               id: 'email'
@@ -35,7 +33,9 @@ const EmailSent = () => {
                 id:"email"
               });
             },
+            
               onError: (error: any) => {
+                toast.error(error.response?.data?.error);
                 console.error('Resend Email error:', error);
               }
     }
@@ -48,7 +48,7 @@ const EmailSent = () => {
 }
   return (
     <div className="flex flex-col items-center justify-center sm:-mt-20 min-h-screen">
-<Link href={'/'}><Image src="/images/gett.png" alt="" width={100} height={100} /></Link>
+  <Link to='/'><img src={logo} alt="" className=" h-10" /></Link>
 <h1  className="font-rubik font-bold text-center mt-10 text-3xl no-underline sm:text-5xl bg-gradient-to-r from-[#408ffe] to-[#1764f4] text-transparent bg-clip-text">
 
 Email Sent
@@ -86,6 +86,9 @@ Verification email sent! Check your inbox for an email from us and follow the pr
                 onClick={(e:any) => onSubmit(e as FormEvent<HTMLFormElement>)}
                 className="group relative flex w-full justify-center rounded-md  bg-gradient-to-r from-[#408ffe] to-[#1764f4] py-2 px-4 text-sm font-medium text-white focus:outline-none focus:ring-2  focus:ring-offset-2"
               >
+                  {sendMail.isPending? <img src={loader} alt='' className="h-4" />
+                    :
+                    <>
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
   <path d="M1.5 8.67v8.58a3 3 0 003 3h15a3 3 0 003-3V8.67l-8.928 5.493a3 3 0 01-3.144 0L1.5 8.67z" />
@@ -94,6 +97,8 @@ Verification email sent! Check your inbox for an email from us and follow the pr
 
 
                 </span>
+                </>
+}
                Resend Email
               </button>
             </div>

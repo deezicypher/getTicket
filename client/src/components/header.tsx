@@ -1,9 +1,8 @@
-'use client'
-import React, { useState } from 'react'
-import Image from 'next/image'
+import { useState } from 'react'
 import Mobilebar from './mobilebar'
 import Cart from './cart'
-import Link from 'next/link'
+import {Link} from 'react-router-dom'
+import { logo } from '../assets/images'
 
 const Header = () => {
     const [toggle, setToggle] = useState<boolean>(false)
@@ -20,7 +19,7 @@ const Header = () => {
 
         </div>
 
-        <div className=''><Image src='/images/gett.png' alt='' width="100" height="100" /></div>
+        <div className=''><img src={logo} alt='' className='h-10' /></div>
 
         <div className='flex flex-row items-center justify-center sm:gap-10 gap-5 '>
             <div className='flex  relative group transition-transform duration-300 hover:scale-110 cursor-pointer' onClick={() => setShowCart(!showCart)}>
@@ -39,11 +38,11 @@ const Header = () => {
 </div>
 <div className='hidden sm:flex gap-5'>
     <div className='text-slate-600 cursor-pointer '>
-       <Link href={'/signin'}>Signin</Link> 
+       <Link to='/signin'>Signin</Link> 
         
     </div>
     <div className='text-slate-600 cursor-pointer'>
-    <Link href={'/signup'}>Signup</Link>
+    <Link to='/signup'>Signup</Link>
     </div>
 </div>
 <div className='hidden sm:flex'>

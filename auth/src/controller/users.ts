@@ -23,29 +23,30 @@ export const signup = async (req: Request, res: Response) => {
 
   const { name, email, password } = req.body;
  
-
+  // Normalize input and trim whitespace
+  const normalizedEmail = email.toLowerCase().trim();
+  const normalizedName = name.toLowerCase().trim();
 
   try {
     // Check if the email or name already exists in the database
     const query = "SELECT * FROM users WHERE email = $1 OR name = $2";
     // Use await to wait for the result of the query, ensures that the query is executed and completes before proceeding.
-    const { rows } = await pool.query(query, [email.toLowerCase(), name.toLowerCase()]);
+    const { rows } = await pool.query(query, [normalizedEmail, normalizedName]);
 
-    // If user is found, check if the email or name already exists
-    if (rows.length > 0) {
-      const user = rows[0];
-      
-      if (user.email === email) {
-         res.status(422).json({ error: "Email already exists" });
-         return
-      }
+ // If user is found, check if the email or name already exists
+ if (rows.length > 0) {
+  const user = rows[0];
+  
+  if (user.email === normalizedEmail) {
+     res.status(422).json({ error: "Email already exists" });
+     return
+  }
 
-      if (user.name === name) {
-         res.status(422).json({ error: "Name already exists" });
-         return
-      }
-    }
-
+  if (user.name === normalizedName) {
+     res.status(422).json({ error: "Name already exists" });
+     return
+  }
+}
     // Hash the password
     const salt = bcrypt.genSaltSync(10);
     const hashedPass = bcrypt.hashSync(password, salt);
@@ -58,18 +59,18 @@ export const signup = async (req: Request, res: Response) => {
     const url = `${CLIENT_URL}/verify?token=${active_token}`;
 
     // Send a confirmation email 
-    // sendEmail(email, url, "Verify your email address", res, email,active_token);
-    res.status(201).json({
-      msg: `Confirmation Email sent to ${email}`,
-      email: email,
-      token:active_token
-  })
+    sendEmail(email, url, "Verify your email address", res, email,active_token);
+     //res.status(201).json({
+       //msg: `Confirmation Email sent to ${email}`,
+       //email: email,
+       //token:active_token
+   //})
   return 
   
     
   } catch (err: any) {
     console.error(err);
-   res.status(500).json({ error: err.message });
+   res.status(500).json({ error: "Unable to proceed further at the moment" });
    return 
   }
 };
@@ -97,10 +98,14 @@ export const activateaccount = async (req: Request, res: Response) => {
 
     const { name, email, password } = user;
 
+// Normalize input and trim whitespace
+const normalizedEmail = email.toLowerCase().trim();
+const normalizedName = name.toLowerCase().trim();
+
 
     //check if user already exists
-    const userCheckQuery = 'SELECT * FROM users WHERE email = $1'
-    const userCheckResult = await pool.query(userCheckQuery,[email])
+    const userCheckQuery = 'SELECT * FROM users WHERE email ILIKE $1'
+    const userCheckResult = await pool.query(userCheckQuery,[normalizedEmail])
 
     if (userCheckResult.rows.length > 0) {
        res.status(422).json({error:"User already exists"})
@@ -112,10 +117,11 @@ export const activateaccount = async (req: Request, res: Response) => {
     const saveQuery = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *';
 
     // Use await to run the query and handle the response
-    const result = await pool.query(saveQuery, [name, email, password]);
+    const result = await pool.query(saveQuery, [normalizedName, normalizedEmail, password]);
 
+    const { id,role, created_at} = result.rows[0]
     // Respond with a success message and the created user
-   res.json({ msg: 'Account has been activated!', user: result.rows[0] });
+   res.json({ msg: 'Account has been activated!', user: {id,name,email,role,created_at} });
    return
 
   } catch (err) {
@@ -154,7 +160,7 @@ export const refreshTokenEndpoint = async (req: Request, res: Response) => {
       res.json({ access_token });
   } catch(err:any){
     console.log(err)
-    res.status(500).json({error: err.message})
+    res.status(500).json({error: "Unable to proceed further at the moment"})
       return
   }
 }
@@ -203,7 +209,7 @@ export const resendEmail = async  (req:Request, res:Response) => {
           
 } catch(err:any){
     console.log(err)
-    res.status(500).json({error: err.message})
+    res.status(500).json({error: "Unable to proceed further at the moment"})
     return
 }
 }
@@ -224,7 +230,7 @@ export const signin = async (req:Request, res:Response) => {
  
   try{
     // check if the user exists
-    const q = "SELECT * FROM users WHERE email = $1"
+    const q = "SELECT * FROM users WHERE email ILIKE $1"
 
     // use await to wait for the result of the query
     const {rows} = await pool.query(q,[email])
@@ -252,7 +258,7 @@ export const signin = async (req:Request, res:Response) => {
     
   } catch(err:any){
     console.log(err)
-    res.status(500).json({error: err.message})
+    res.status(500).json({error: "Unable to proceed further at the moment"})
     return
   }
 }
@@ -288,7 +294,7 @@ try{
 
 }catch(err:any){
   console.log(err)
-  res.status(500).json({error: err.message})
+  res.status(500).json({error: "Unable to proceed further at the moment"})
   return
 }
 }
@@ -358,6 +364,6 @@ export const currentUser = async (req:Request, res:Response) => {
     res.json({user:resultq.rows[0]})
   }catch(err) {
     console.log(err)
-    res.status(500).json("Unable to proceed further")
+    res.status(500).json("Unable to proceed further at the moment")
   }
 };
