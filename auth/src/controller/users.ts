@@ -362,6 +362,7 @@ export const currentUser = async (req:Request, res:Response) => {
     }
 
     res.json({user:resultq.rows[0]})
+    return
   }catch(err) {
     console.log(err)
     res.status(500).json("Unable to proceed further at the moment")

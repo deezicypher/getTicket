@@ -1,10 +1,10 @@
 
-import React, {createContext, useContext} from 'react'
+import React, {createContext, useContext, useEffect, useState} from 'react'
 import {  useMutation } from '@tanstack/react-query';
 import { AuthContextProps, LoginFormData, ResetPassProps, SignupFormData } from '../types';
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom';
-import { postAPI } from '../utils/fetchData';
+import { getAPI, postAPI } from '../utils/fetchData';
 import Cookies from 'js-cookie'
 
 
@@ -12,6 +12,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
 export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
       const navigate = useNavigate()
+      const [user, setUser] = useState<Record<string,unknown>>({})
       
 
   
@@ -22,7 +23,8 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
             return res.data;
      
         },
-          onSuccess: async () => {
+          onSuccess: async (data) => {
+            setUser(data.user)
                 return navigate('/app')
             
           },
@@ -133,9 +135,44 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
       },
     }
   );
+
+  const logout = useMutation({
+    mutationFn: async () => {
+      const res = await postAPI('users/signout')
+      return res.data
+    },
+    onSuccess: (data) => {
+      Cookies.remove('regdata')
+      setUser({})
+      toast.success(data.msg)
+      navigate('/')
+    },
+    onError:(error) => {
+      console.log(error)
+    }
+  })
+
+
+  const authCheckState = useMutation({
+    mutationFn: async() => {
+      const res = await getAPI('users/currentuser')
+      return res.data
+    },
+    onSuccess:(data)=>{
+      setUser(data.user)
+    },
+    onError:(error:any) => {
+      console.log(error)
+    }
+  })
+  
+  useEffect(() => {
+    authCheckState.mutate();
+  }, []);
+
     return (
        <AuthContext.Provider value={{
-        login, signup, getVerify, sendPass, resetPass
+        login, signup, getVerify, sendPass, resetPass, user, setUser,logout
         }}>
         {children}
        </AuthContext.Provider>

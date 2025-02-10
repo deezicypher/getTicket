@@ -3,11 +3,15 @@ import Mobilebar from './mobilebar'
 import Cart from './cart'
 import {Link} from 'react-router-dom'
 import { logo } from '../assets/images'
+import { useAuthContext } from '../context/authContext'
 
 const Header = () => {
+  const {user,logout} = useAuthContext()
     const [toggle, setToggle] = useState<boolean>(false)
     const [showCart, setShowCart] = useState<boolean>(false)
 
+    console.log(user)
+   
   return (
 <div className='flex relative flex-col'>
     <div className='sm:py-4 sm:px-6 xl:px-10 p-2 flex flex-row justify-between items-center'>
@@ -36,6 +40,7 @@ const Header = () => {
 </svg>
 
 </div>
+{!user.id && (
 <div className='hidden sm:flex gap-5'>
     <div className='text-slate-600 cursor-pointer '>
        <Link to='/signin'>Signin</Link> 
@@ -45,12 +50,15 @@ const Header = () => {
     <Link to='/signup'>Signup</Link>
     </div>
 </div>
-<div className='hidden sm:flex'>
+)}
+{user.id && (
+<div className='hidden sm:flex' title='Logout' onClick={() => logout.mutate()}>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 cursor-pointer">
   <path fillRule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
 </svg>
 
 </div>
+)}
 
         </div>
     </div>

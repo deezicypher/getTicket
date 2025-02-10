@@ -6,7 +6,7 @@ const instance = axios.create({
 });
 
 
-export const postAPI = async (url:string, post:object) => {
+export const postAPI = async (url:string, post?:object) => {
   const res = await instance.post(`/api/${url}`, post)
 
   return res;
