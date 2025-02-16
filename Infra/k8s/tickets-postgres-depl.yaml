@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-postgres-depl
+  name: tickets-postgres-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth-postgres
+      app: tickets-postgres
   template:
     metadata:
       labels:
-        app: auth-postgres
+        app: tickets-postgres
     spec:
       containers:
-        - name: auth-postgres
+        - name: tickets-postgres
           image: postgres
           ports:
             - containerPort: 5432
@@ -22,7 +22,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
-                  key: POSTGRES_AUTH_DB
+                  key: POSTGRES_TICKETS_DB
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -35,11 +35,11 @@ spec:
                   key: POSTGRES_PASSWORD
           volumeMounts: 
             - name: postgres-storage
-              mountPath: /var/lib/postgresql/auth_data
+              mountPath: /var/lib/postgresql/tickets_data
       volumes:
         - name: postgres-storage
           persistentVolumeClaim: 
-            claimName: auth-postgres-pvc  
+            claimName: tickets-postgres-pvc  
 
 
 
@@ -47,10 +47,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-postgres-srv
+  name: tickets-postgres-srv
 spec:
   selector:
-    app: auth-postgres
+    app: tickets-postgres
   ports:
     - name: db
       protocol: TCP
@@ -62,7 +62,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: auth-postgres-pv
+  name: tickets-postgres-pv
   labels:
     type: local
 spec:
@@ -78,7 +78,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: auth-postgres-pvc
+  name: tickets-postgres-pvc
 spec:
   storageClassName: manual
   accessModes:

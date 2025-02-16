@@ -1,5 +1,5 @@
 {
-  "name": "auth",
+  "name": "tickets",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
-    "@xgettickets/common": "^1.0.4",
+    "@xgettickets/common": "^1.0.3",
     "bcrypt": "^5.1.1",
     "cookie-session": "^2.1.0",
     "express": "^4.21.2",

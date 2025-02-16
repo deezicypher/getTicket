@@ -1,5 +1,4 @@
 import express,{Request,Response,NextFunction} from "express"
-import userRoute from './routes/user'
 import cookieSession from "cookie-session"
 import dotenv from 'dotenv'
 dotenv.config()
@@ -12,7 +11,7 @@ app.use(cookieSession({
   secure: process.env.NODE_ENV !== 'test'
 }))
 
-app.use(userRoute)
+
 app.all('*', (req: Request, res: Response) => {
   res.status(404).json({ error: "Route Not Found" });
 });  

@@ -23,4 +23,12 @@ build:
         manual:
           - dest: .
             src: 'src/**/*.tsx'
+    - image: deezicypher/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: 'src/**/*.tsx'
 
