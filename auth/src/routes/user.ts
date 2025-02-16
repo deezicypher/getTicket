@@ -5,14 +5,14 @@ import { verifyToken } from '@xgettickets/common'
 
 const router = express.Router()
 
-router.get('/api/users/currentuser', verifyToken, currentUser)
-router.post('/api/users/signup',validSignup,signup)
-router.post('/api/users/activate', activateaccount)
-router.post('/api/users/resend-email',validSignup,resendEmail)
-router.post('/api/users/refresh_token',refreshTokenEndpoint)
-router.post('/api/users/signin',validLogin, signin)
-router.post('/api/users/forgotpassword',forgotPasswordValidator, forgetPassword)
-router.post('/api/users/resetpassword',resetPasswordValidator, ResetPassword)
-router.post('/api/users/signout', logout)
+router.get('/currentuser', verifyToken, currentUser)
+router.post('/signup',validSignup,signup)
+router.post('/activate', activateaccount)
+router.post('/resend-email',validSignup,resendEmail)
+router.post('/refresh_token',refreshTokenEndpoint)
+router.post('/signin',validLogin, signin)
+router.post('/forgotpassword',forgotPasswordValidator, forgetPassword)
+router.post('/resetpassword',resetPasswordValidator, ResetPassword)
+router.post('/signout', logout)
 
 export default router

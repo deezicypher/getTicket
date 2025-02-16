@@ -12,7 +12,7 @@ app.use(cookieSession({
   secure: process.env.NODE_ENV !== 'test'
 }))
 
-app.use(userRoute)
+app.use('/api/users', userRoute)
 app.all('*', (req: Request, res: Response) => {
   res.status(404).json({ error: "Route Not Found" });
 });  
