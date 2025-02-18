@@ -1,5 +1,7 @@
 import express,{Request,Response,NextFunction} from "express"
+import ticketsRouter from './routes/new'
 import cookieSession from "cookie-session"
+import { verifyToken } from "@xgettickets/common"
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -11,7 +13,8 @@ app.use(cookieSession({
   secure: process.env.NODE_ENV !== 'test'
 }))
 
-
+//app.use(verifyToken)
+app.use('/api/tickets', ticketsRouter)
 app.all('*', (req: Request, res: Response) => {
   res.status(404).json({ error: "Route Not Found" });
 });  
