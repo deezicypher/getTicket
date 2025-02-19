@@ -14,4 +14,4 @@ const poolConfig = process.env.NODE_ENV === 'test'
   console.log('Using pool config:', poolConfig);
 const pool = new Pool(poolConfig);
 
-export default pool
+export default pool 

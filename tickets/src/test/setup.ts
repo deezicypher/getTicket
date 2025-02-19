@@ -12,26 +12,25 @@ const pool = new Pool({
 
 beforeAll(async () => {
   // Run migrations or seed the database before running tests
-  await pool.query(`CREATE TABLE "users" (
-    "id" SERIAL PRIMARY KEY,
-    "name" varchar NOT NULL,
-    "email" varchar NOT NULL,
-    "password" varchar NOT NULL,
-    "role" varchar NOT NULL DEFAULT 'USER',
-    "created_at" timestamptz NOT NULL DEFAULT (now())
+  await pool.query(`CREATE TABLE "tickets" (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(225) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    user_id INTEGER NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
   );`);
 });
 
 
 afterAll(async () => {
   // Clean up the database after tests
-  await pool.query('DROP TABLE IF EXISTS users');
+  await pool.query('DROP TABLE IF EXISTS tickets');
   await pool.end();
-});
-
+}); 
+ 
 beforeEach(async () => {
     // Clear the users table before each test
-    await pool.query('DELETE FROM users');
+    await pool.query('DELETE FROM tickets');
   });
 
 

@@ -1,5 +1,5 @@
 import express,{Request,Response,NextFunction} from "express"
-import ticketsRouter from './routes/new'
+import ticketsRouter from './routes/tickets'
 import cookieSession from "cookie-session"
 import { verifyToken } from "@xgettickets/common"
 import dotenv from 'dotenv'

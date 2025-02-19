@@ -21,6 +21,45 @@ it('returns a status other than 401, when the user is signed in', async () => {
     expect(response.status).not.toEqual(401);  // Should not return 401 if token is valid
   });
   
-it('returns an error if an invalid title is provided', async () => {})
-it('returns an error if an invalid price is provided', async () => {})
-it('creates a ticket with ssvalid input', async () => {})
+it('returns an error if an invalid title is provided', async () => {
+  const cookie = signin();
+  await request(app)
+  .post('/api/tickets')
+  .set('Cookie', cookie)
+  .send({
+    title:'',
+    price:10
+  })
+  .expect(422)
+
+  await request(app)
+  .post('/api/tickets')
+  .set('Cookie', cookie)
+  .send({
+    price:10
+  })
+  .expect(422)
+})
+it('returns an error if an invalid price is provided', async () => {
+  const cookie = signin();
+  await request(app)
+  .post('/api/tickets')
+  .set('Cookie', cookie)
+  .send({
+    title:'flckshow',
+    price:-10
+  })
+  .expect(422)
+})
+it('creates a ticket with valid input', async () => {
+  const cookie = signin();
+  await request(app)
+  .post('/api/tickets')
+  .set('Cookie', cookie)
+  .send({
+    title: 'HoodFlick',
+    price: 50
+  })
+  .expect(201)
+
+})
