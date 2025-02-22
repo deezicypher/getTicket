@@ -62,4 +62,42 @@ it('creates a ticket with valid input', async () => {
   })
   .expect(201)
 
+}) 
+  
+// GET/SHOW Tickets
+
+it('returns a 404 if ticket is not found', async () => {
+  await request(app)
+  .get('/api/tickets/23')
+  .send()
+  .expect(404)
+})
+it('returns a 422 if ticket id is not a number', async () => {
+  await request(app)
+  .get('/api/tickets/hood')
+  .send()
+  .expect(422)
+})
+it('returns the ticket if the ticket is found', async () => {
+  const cookie = signin()
+  const title = 'hoodflick'
+  const price = "20.00" 
+  const response = await request(app)
+  .post('/api/tickets/')
+  .set('Cookie', cookie)
+  .send({
+      title,
+      price 
+  })
+  .expect(201)
+
+  
+  const {id} = response.body.rows[0]
+  const ticketResponse = await request(app)
+  .get(`/api/tickets/${id}`)
+  .send()
+  .expect(200)
+
+  expect(ticketResponse.body.title).toEqual(title)
+  expect(ticketResponse.body.price).toEqual(price)
 })

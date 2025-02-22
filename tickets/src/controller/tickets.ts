@@ -14,7 +14,7 @@ export const CreateTicket = async (req:Request, res:Response) => {
     const {title,price} = req.body
 
     // normalize inputs
-    const normalizedTitle = title.toLowerCase().trim
+    const normalizedTitle = title.toLowerCase().trim()
 
     // Get user id
     const id = req.user?.id
@@ -32,4 +32,29 @@ export const CreateTicket = async (req:Request, res:Response) => {
         res.status(500).json({error:"Unable to proceed further at the moment"})
     }
  
+}
+
+export const GetTicket = async (req:Request, res:Response) => {
+    const {id} = req.params
+    const input = id.trim()
+    if(isNaN(Number(input))) {
+        res.status(422).json({error: "Invalid input: expected an integer"})
+        return
+    }
+    try{
+        // retrive the ticket query
+        const q = "SELECT * from tickets WHERE id = $1"
+        // Use await to wait for the result of the query, ensures that the query is executed and completes before proceeding.
+        const {rows} = await pool.query(q,[id])
+        if (rows.length === 0){
+            res.status(404).json({error: "Ticket not found"})
+            return
+        }
+        const result = rows[0]
+        res.status(200).send(result)
+
+    }catch(err) {
+        console.log(err)
+        res.status(500).json({error: "Can't proceed further at the moment."})
+    }
 }

@@ -11,7 +11,7 @@ const poolConfig = process.env.NODE_ENV === 'test'
     password: process.env.POSTGRES_PASSWORD,
     port: 5432,
   };
-  console.log('Using pool config:', poolConfig);
+  //console.log('Using pool config:', poolConfig);
 const pool = new Pool(poolConfig);
 
-export default pool 
+export default pool  
