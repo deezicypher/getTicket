@@ -6,3 +6,8 @@ export const validateCreateTicket: RequestHandler [] = [
     check('price').isFloat({gt:0}).withMessage('Price must be greater than 0')
 
 ]
+
+export const validateUpdateTicket: RequestHandler [] = [
+    check('price').isFloat({gt:0}).withMessage('Price must be greater than 0')
+
+]

@@ -23,9 +23,9 @@ export const CreateTicket = async (req:Request, res:Response) => {
     const q = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
 
     // use await to handle the query and store the result in a variable
-    const result = await pool.query(q,[normalizedTitle,price,id])
+    const {rows} = await pool.query(q,[normalizedTitle,price,id])
 
-    res.status(201).send(result)
+    res.status(201).send(rows[0])
     return
     }catch(err){
         console.log(err)
@@ -129,7 +129,7 @@ export const UpdateTicket = async (req:Request, res:Response) => {
             updateQuery += ' WHERE id = $' + paramIndex
             updateParams.push(id)
      
-            await pool.query(updateQuery,updateParams);
+            const result = await pool.query(updateQuery,updateParams);
             res.status(200).json({ msg: 'Ticket updated successfully' });
             return;
 
