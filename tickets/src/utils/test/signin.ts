@@ -2,10 +2,16 @@ import { app } from "../../app";
 import request from 'supertest'
 import jwt from "jsonwebtoken";
 
+let currentID = 0
+
+function generateID(){
+  currentID += 1
+  return currentID
+}
 
 export const signin = () => {
     // Build a JWT payload, {id}
-    const payload = {id:1}
+    const payload = {id: generateID()}
     // Create the JWT!
     const token = jwt.sign(payload, `${process.env.ACCESS_TOKEN_SECRET}`);
 
