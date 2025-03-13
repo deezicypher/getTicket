@@ -1,5 +1,6 @@
 import { app } from "./app";
 import pool from "./config/db"
+import { natsWrapper } from "./nats-wrapper";
 
 const start = async () => {
   if(!process.env.NODE_ENV) {
@@ -11,6 +12,13 @@ const start = async () => {
 }
   }
   try {
+    await natsWrapper.connect('ticketing','random4','http://nats-srv:4222')
+    natsWrapper.client.on('close', ()=> {
+      console.log('NATS connection closed')
+      process.exit()
+  })
+  process.on('SIGINT', () => natsWrapper.client.close())
+  process.on('SIGTERM', () => natsWrapper.client.close())
     await pool.connect()
     console.log("Connected to DB")
       const createTableQuery = `

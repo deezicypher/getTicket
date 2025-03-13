@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import pool from "../config/db";
+import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
+
 
 export const CreateTicket = async (req:Request, res:Response) => {
     const errors = validationResult(req)
@@ -24,7 +27,12 @@ export const CreateTicket = async (req:Request, res:Response) => {
 
     // use await to handle the query and store the result in a variable
     const {rows} = await pool.query(q,[normalizedTitle,price,id])
-
+    new TicketCreatedPublisher(natsWrapper.client).publish({
+        id:rows[0].id,
+        title: rows[0].title,
+        price: rows[0].price,
+        
+    })
     res.status(201).send(rows[0])
     return
     }catch(err){
