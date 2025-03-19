@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import pool from "../config/db";
 import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
+import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated_publisher";
 import { natsWrapper } from "../nats-wrapper";
 
 
@@ -111,7 +112,7 @@ export const UpdateTicket = async (req:Request, res:Response) => {
             }
             // update the ticket query
             let updateQuery = "UPDATE tickets SET "
-            const updateParams:any = []
+            const updateParams:any[] = []
             let paramIndex = 1
 
             if(title){
@@ -136,9 +137,18 @@ export const UpdateTicket = async (req:Request, res:Response) => {
 
             updateQuery += ' WHERE id = $' + paramIndex
             updateParams.push(id)
+            updateQuery += ' RETURNING *'
      
-            const result = await pool.query(updateQuery,updateParams);
-            res.status(200).json({ msg: 'Ticket updated successfully' });
+            const {rows : updatedRows} = await pool.query(updateQuery,updateParams);
+            const updatedTicket = updatedRows[0]
+
+            await new TicketUpdatedPublisher(natsWrapper.client).publish({
+                id:updatedTicket.id,
+                title:updatedTicket.title,
+                price:updatedTicket.price,
+                user_id:updatedTicket.user_id
+            })
+            res.send(updatedTicket);
             return;
 
    } catch (error) {
