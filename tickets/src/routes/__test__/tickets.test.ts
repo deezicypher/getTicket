@@ -3,6 +3,8 @@ import { app } from "../../app";
 import { signin } from "../../utils/test/signin";
 
 
+
+
 it('has a route listening to /api/tickets for post request', async () => {
     const response = await request(app).post('/api/tickets').send({});
             expect(response.status).not.toEqual(404)
@@ -92,7 +94,7 @@ it('returns the ticket if the ticket is found', async () => {
   .expect(201)
 
   
-  const {id} = response.body.rows[0]
+  const {id} = response.body
   const ticketResponse = await request(app)
   .get(`/api/tickets/${id}`)
   .send()
@@ -167,7 +169,7 @@ it('returns a 403 if the user does not own the ticket', async () => {
       })
 
   await request(app)
-      .put(`/api/tickets/${response.body.rows[0].id}`)
+      .put(`/api/tickets/${response.body.id}`)
       .set('Cookie', signin())
       .send({
         title: 'hoodhigh',
@@ -187,7 +189,7 @@ it('returns a 422 if the user provides an invalid title or price', async () => {
       })
 
   await request(app)
-      .put(`/api/tickets/${response.body.rows[0].id}`)
+      .put(`/api/tickets/${response.body.id}`)
       .set('Cookie', cookie)
       .send({
         title: '',
@@ -208,7 +210,7 @@ it('updates the tickets, provided valid title or price', async () => {
       })
 
   await request(app)
-      .put(`/api/tickets/${response.body.rows[0].id}`)
+      .put(`/api/tickets/${response.body.id}`)
       .set('Cookie', cookie)
       .send({
         title: 'hoodhigh',
@@ -217,7 +219,7 @@ it('updates the tickets, provided valid title or price', async () => {
       .expect(200)
 
       const ticketResponse = await request(app)
-            .get(`/api/tickets/${response.body.rows[0].id}`) 
+            .get(`/api/tickets/${response.body.id}`) 
             .send();
 
             expect(ticketResponse.body.title).toEqual('hoodhigh')

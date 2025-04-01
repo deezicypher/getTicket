@@ -5,6 +5,7 @@ import { app } from '../app';
 beforeAll(async () => {
   await setupTestDb();
 });
+jest.mock('../nats-wrapper')
 
 afterAll(async () => {
   await tearDownTestDb();
