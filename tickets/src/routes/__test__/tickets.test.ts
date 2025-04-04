@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import { signin } from "../../utils/test/signin";
-
+import { natsWrapper } from "../../nats-wrapper";
 
 
 
@@ -65,6 +65,20 @@ it('creates a ticket with valid input', async () => {
   .expect(201)
 
 }) 
+
+it('Publishes an event', async () => {
+  const cookie = signin();
+  await request(app)
+  .post('/api/tickets')
+  .set('Cookie', cookie)
+  .send({
+    title: 'HoodFlick',
+    price: 50
+  })
+  .expect(201)
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
+})
   
 // GET/SHOW Tickets
 
@@ -226,4 +240,32 @@ it('updates the tickets, provided valid title or price', async () => {
             expect(ticketResponse.body.price).toEqual("45.00")
 
 
+})
+
+it('it publishes an event on update', async () => {
+  const cookie = signin()
+  const response = await request(app)
+      .post('/api/tickets')
+      .set('Cookie',cookie)
+      .send({
+        title:'Hoodflick',
+        price:30.00
+      })
+
+  await request(app)
+      .put(`/api/tickets/${response.body.id}`)
+      .set('Cookie', cookie)
+      .send({
+        title: 'hoodhigh',
+        price: 45.00
+      })
+      .expect(200)
+
+      const ticketResponse = await request(app)
+            .get(`/api/tickets/${response.body.id}`) 
+            .send();
+            expect(ticketResponse.body.title).toEqual('hoodhigh')
+            expect(ticketResponse.body.price).toEqual("45.00");
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled();
 })

@@ -4,7 +4,7 @@ import { natsWrapper } from "./nats-wrapper";
 
 const start = async () => {
   if(!process.env.NODE_ENV) {
-  if (!process.env.POSTGRES_TICKETS_DB || !process.env.POSTGRES_USER || !process.env.POSTGRES_PASSWORD 
+  if (!process.env.NATS_URL || !process.env.NATS_CLUSTER_ID || !process.env.NATS_CLIENT_ID || !process.env.POSTGRES_TICKETS_DB || !process.env.POSTGRES_USER || !process.env.POSTGRES_PASSWORD 
     || !process.env.ACTIVE_TOKEN_SECRET || !process.env.ACCESS_TOKEN_SECRET 
     || !process.env.REFRESH_TOKEN_SECRET || !process.env.CLIENT_URL
 ) {
@@ -12,7 +12,7 @@ const start = async () => {
 }
   }
   try {
-    await natsWrapper.connect('ticketing','random4','http://nats-srv:4222')
+    await natsWrapper.connect(process.env.NATS_CLUSTER_ID!,process.env.NATS_CLIENT_ID!,process.env.NATS_URL!)
     natsWrapper.client.on('close', ()=> {
       console.log('NATS connection closed')
       process.exit()

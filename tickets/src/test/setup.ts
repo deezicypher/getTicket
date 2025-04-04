@@ -12,5 +12,6 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  jest.clearAllMocks()
   await clearTestData();
 });
