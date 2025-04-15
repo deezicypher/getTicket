@@ -1,4 +1,4 @@
-import express, {Request, Response} from 'express'
+import  {Request, Response} from 'express'
 
 const ShowIndex = (req:Request, res:Response) => {
     res.send({})

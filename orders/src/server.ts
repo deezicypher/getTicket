@@ -22,16 +22,25 @@ const start = async () => {
     await pool.connect()
     console.log("Connected to DB")
       const createTableQuery = `
+          CREATE TABLE IF NOT EXISTS orders (
+            id SERIAL PRIMARY KEY,
+            status VARCHAR(225) NOT NULL,
+            user_id INTEGER NOT NULL,
+            ticketId INTEGER NOT NULL,
+            expires_at TIMESTAMPTZ NOT NULL, 
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+          );
+
           CREATE TABLE IF NOT EXISTS tickets (
             id SERIAL PRIMARY KEY,
             title VARCHAR(225) NOT NULL,
             price DECIMAL(10,2) NOT NULL,
-            user_id INTEGER NOT NULL,
-            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-          );
+            version INTEGER NOT NULL
+          )
         `;
+        
         await pool.query(createTableQuery);
-        console.log("Created Tickets table")
+        console.log("Created Orders and tickets table")
 
     app.listen(3000,()=>{
       console.log('Listening on port 3000')
