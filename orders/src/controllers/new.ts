@@ -13,7 +13,7 @@ const NewOrder = async (req:Request, res:Response) => {
     // Find the ticket the user is trying to order in the database
     const {ticketId} = req.body
 
-    const ticketq = "SELECT * from orders WHERE id = $1"
+    const ticketq = "SELECT * from tickets WHERE id = $1"
     const {rows} = await pool.query(ticketq,[ticketId])
     if (rows.length === 0){
         res.status(404).json({error: "Ticket not found"})
@@ -42,7 +42,6 @@ const NewOrder = async (req:Request, res:Response) => {
     const buildres = await pool.query(buildq,['created',req.user?.id,ticketresult.id,expirationDate])
 
     // Publish an event saying an order was created
-    console.log(buildres.rows[0])
     res.status(201).send(buildres.rows[0])
     return
     

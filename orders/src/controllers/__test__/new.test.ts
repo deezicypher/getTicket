@@ -54,5 +54,14 @@ it('returns an error if the ticket is already reserved', async () => {
 })
 
 it('reserves a ticket', async () => {
+    const cookie = signin();
+    const ticketq = 'INSERT INTO tickets (title,price) VALUES ($1,$2) RETURNING *'
+    const {rows} = await pool.query(ticketq,['hoodzone',200])
+    const ticketId = rows[0].id
+    await request(app)
+        .post('/api/orders')
+        .set('Cookie', cookie)
+        .send({ticketId})
+        .expect(201)
 
 })
