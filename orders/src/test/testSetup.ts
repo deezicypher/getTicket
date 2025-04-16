@@ -31,6 +31,9 @@ if (!config.connectionString) {
 
 const pool = new Pool(config);
 
+
+
+
 // Function to check if table exists
 const tableExists = async (tableName: string): Promise<boolean> => {
   try {
@@ -66,7 +69,7 @@ export const setupTestDb = async (): Promise<void> => {
         id SERIAL PRIMARY KEY,
         title VARCHAR(225) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
-        version INTEGER NOT NULL
+        version INTEGER 
       );
     `;
     await pool.query(createTableQuery);

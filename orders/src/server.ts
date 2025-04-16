@@ -26,7 +26,7 @@ const start = async () => {
             id SERIAL PRIMARY KEY,
             status VARCHAR(225) NOT NULL,
             user_id INTEGER NOT NULL,
-            ticketId INTEGER NOT NULL,
+            ticket_id INTEGER NOT NULL,
             expires_at TIMESTAMPTZ NOT NULL, 
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
           );
