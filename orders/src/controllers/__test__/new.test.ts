@@ -1,26 +1,7 @@
 import request from "supertest"
 import { app } from "../../app"
 import { signin } from "../../utils/test/signin";
-import dotenv from "dotenv";
-import { Pool } from 'pg';
-
-dotenv.config();
-
-// Define types
-interface DatabaseConfig {
-  connectionString: string;
-}
-
-// Create a new pool for the test database
-const config: DatabaseConfig = {
-  connectionString: process.env.TEST_DATABASE_URL || '',
-};
-
-if (!config.connectionString) {
-  throw new Error('DATABASE_URL is not defined in environment variables');
-}
-
-const pool = new Pool(config);
+import {pool} from "../../test/testSetup";
 
 
 it('returns an error if the ticket does not exist', async () => {
@@ -63,5 +44,54 @@ it('reserves a ticket', async () => {
         .set('Cookie', cookie)
         .send({ticketId})
         .expect(201)
+
+})
+
+it.todo('Emits an order created event')
+
+//Index Test
+
+const buildTicket = async () => {
+    const ticketq = 'INSERT INTO tickets (title,price) VALUES ($1,$2) RETURNING *'
+    const {rows} = await pool.query(ticketq,['hoodzone',200])
+   return rows[0].id
+}
+it('fetches orders from a particular user', async () => {
+    // create three tickets
+    const ticket1 = await buildTicket()
+    const ticket2 = await buildTicket()
+    const ticket3 = await buildTicket()
+
+    const user1 = signin();
+    const user2 = signin();
+
+    //create one order as user #1
+    await request(app)
+        .post('/api/orders')
+        .set('Cookie', user1)
+        .send({ticketId:ticket1})
+        .expect(201)
+    
+     //create two orders as user #2
+     await request(app)
+     .post('/api/orders')
+     .set('Cookie', user2)
+     .send({ticketId:ticket2})
+     .expect(201)
+
+     await request(app)
+     .post('/api/orders')
+     .set('Cookie', user2)
+     .send({ticketId:ticket3})
+     .expect(201)
+
+     //make request to get orders for user #2
+
+     const res = await request(app)
+        .get('/api/orders')
+        .set('Cookie', user2)
+        .expect(200)
+    
+    console.log(res.body)
 
 })

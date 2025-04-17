@@ -7,7 +7,7 @@ import ShowOrder from "../controllers/show";
 import { validateCreateOrder } from "../../middlewares/validators";
 
 const router = Router()
-router.get('', ShowIndex)
+router.get('',verifyToken,ShowIndex)
 router.delete('/:id',verifyToken,DeleteOrder)
 router.post('',verifyToken,validateCreateOrder,NewOrder)
 router.get('/:id',verifyToken,ShowOrder)
