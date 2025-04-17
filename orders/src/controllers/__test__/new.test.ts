@@ -73,25 +73,26 @@ it('fetches orders from a particular user', async () => {
         .expect(201)
     
      //create two orders as user #2
-     await request(app)
+    const {body:order1} = await request(app)
      .post('/api/orders')
      .set('Cookie', user2)
      .send({ticketId:ticket2})
      .expect(201)
 
-     await request(app)
+     const {body:order2} = await request(app)
      .post('/api/orders')
      .set('Cookie', user2)
      .send({ticketId:ticket3})
      .expect(201)
 
-     //make request to get orders for user #2
+    //make request to get orders for user #2
 
-     const res = await request(app)
+    const res = await request(app)
         .get('/api/orders')
         .set('Cookie', user2)
         .expect(200)
-    
-    console.log(res.body)
+    expect(res.body.length).toEqual(2)
+    expect(res.body[1].id).toEqual(order1.id)
+    expect(res.body[0].id).toEqual(order2.id)
 
 })
