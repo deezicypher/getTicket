@@ -145,6 +145,39 @@ it('returns an error, if one user tries to fetch another users order', async ()=
         .send()
         .expect(401)
 
-  
+})
+
+
+// Delete test
+
+it('Marks an order as cancelled', async () => {
+    const cookie = signin();
+    // create a ticket with Ticket model
+    const ticket = await buildTicket()
+    // make a request to create an order
+    const {body:order} = await request(app)
+    .post('/api/orders')
+    .set('Cookie', cookie)
+    .send({ticketId:ticket})
+    .expect(201)
+   
+    // make a request to cancel the order
+    await request(app)
+        .delete(`/api/orders/${order.id}`)
+        .set('Cookie', cookie)
+        .send()
+        .expect(200)
+
+    // expectation to make sure the thing is cancelled
+
+    const {body:deletedOrder} = await request(app)
+    .get(`/api/orders/${order.id}`)
+    .set('Cookie', cookie)
+    .send()
+    .expect(200)
+
+    expect(deletedOrder.status).toEqual('cancelled')
 
 })
+
+it.todo('it emits an order cancelled event')

@@ -4,10 +4,10 @@ import pool from '../config/db'
 
 const ShowOrder = async (req:Request, res:Response) => {
     const {id} = req.params
-    const firstError = validationResult(req)
-    if(!firstError.isEmpty()){
-        const error = firstError.array().map(err => err.msg)[0]
-        res.status(422).json({error:error})
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        const firstError = errors.array().map(err => err.msg)[0]
+        res.status(422).json({error:firstError})
         return
     }
 
