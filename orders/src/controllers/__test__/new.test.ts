@@ -92,7 +92,59 @@ it('fetches orders from a particular user', async () => {
         .set('Cookie', user2)
         .expect(200)
     expect(res.body.length).toEqual(2)
+    // Order list is Ordered By DESC
     expect(res.body[1].id).toEqual(order1.id)
     expect(res.body[0].id).toEqual(order2.id)
+
+})
+
+
+// fetch Order test
+
+it('fetches the order', async ()=>{
+
+    // create the ticket
+    const ticket = await buildTicket()
+    const cookie = signin();
+
+    // make a request to build an order with this ticket
+    const {body:order} = await request(app)
+        .post('/api/orders')
+        .set('Cookie', cookie)
+        .send({ticketId:ticket})
+        .expect(201)
+
+    // make request to fetch the order
+    const {body:fetchedOrder} = await request(app)
+        .get(`/api/orders/${order.id}`)
+        .set('Cookie', cookie)
+        .send()
+        .expect(200)
+    expect(fetchedOrder.id).toEqual(order.id)
+  
+
+})
+
+it('returns an error, if one user tries to fetch another users order', async ()=>{
+
+    // create the ticket
+    const ticket = await buildTicket()
+    const cookie = signin();
+
+    // make a request to build an order with this ticket
+    const {body:order} = await request(app)
+        .post('/api/orders')
+        .set('Cookie', cookie)
+        .send({ticketId:ticket})
+        .expect(201)
+
+    // make request to fetch the order
+    await request(app)
+        .get(`/api/orders/${order.id}`)
+        .set('Cookie', signin())
+        .send()
+        .expect(401)
+
+  
 
 })
