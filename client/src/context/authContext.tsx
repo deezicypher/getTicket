@@ -79,7 +79,7 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
     mutationFn: async (forgotEmail:string) => {
  
 
-        const res = await postAPI('users/forgot-password', { forgotEmail });
+        const res = await postAPI('users/forgot-password', { email:forgotEmail });
         return res.data;
  
     },

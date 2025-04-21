@@ -25,8 +25,8 @@ export const validLogin: RequestHandler[] = [
 
 export const forgotPasswordValidator: RequestHandler[] = [
   check('email')
-    .not()
-    .isEmpty()
+  .trim()
+  .notEmpty().withMessage('Email is required')
     .isEmail()
     .withMessage('Must be a valid email address')
 ];

@@ -1,6 +1,9 @@
 import {Request, Response} from 'express'
 import { validationResult } from 'express-validator'
 import pool from '../config/db'
+import { OrderCancelledPublisher } from '../events/publishers/order-cancelled-publisher'
+import { natsWrapper } from '../nats-wrapper'
+
 
 const DeleteOrder = async(req:Request, res:Response) => {
     const {id} = req.params
@@ -25,6 +28,17 @@ const DeleteOrder = async(req:Request, res:Response) => {
     }
     const uq = "UPDATE orders SET status = 'cancelled' WHERE id = $1 RETURNING *"
     const {rows:updatedorder} = await pool.query(uq,[id])
+
+
+
+    //Publishing an event saying this was cancelled
+    new OrderCancelledPublisher(natsWrapper.client).publish({
+        id,
+        ticket:{
+            id:updatedorder[0].ticket_id
+        }
+    })
+
    
     res.status(200).send(updatedorder[0])
     return

@@ -1,6 +1,9 @@
 import  {Request, Response} from 'express'
 import { validationResult } from 'express-validator'
 import pool from '../config/db'
+import { OrderCreatedPublisher } from '../events/publishers/order-created-publisher'
+import { OrderStatus } from '@xgettickets/common'
+import { natsWrapper } from '../nats-wrapper'
 
 const NewOrder = async (req:Request, res:Response) => {
     const errors = validationResult(req)
@@ -14,7 +17,7 @@ const NewOrder = async (req:Request, res:Response) => {
     const {ticketId} = req.body
 
     const ticketq = "SELECT * from tickets WHERE id = $1"
-    const {rows} = await pool.query(ticketq,[ticketId])
+    const {rows } = await pool.query(ticketq,[ticketId])
     if (rows.length === 0){
         res.status(404).json({error: "Ticket not found"})
         return
@@ -39,10 +42,21 @@ const NewOrder = async (req:Request, res:Response) => {
 
     // Build the order and save it to the database
     const buildq = 'INSERT INTO orders (status,user_id,ticket_id,expires_at) VALUES ($1,$2,$3,$4) RETURNING *'
-    const buildres = await pool.query(buildq,['created',req.user?.id,ticketresult.id,expirationDate])
+    const {rows:order} = await pool.query(buildq,['created',req.user?.id,ticketresult.id,expirationDate])
 
     // Publish an event saying an order was created
-    res.status(201).send(buildres.rows[0])
+   
+    new OrderCreatedPublisher(natsWrapper.client).publish({
+        id:order[0].id,
+        status:OrderStatus.Created,
+        user_id: String(req.user?.id),
+        expires_at: expirationDate.toISOString(),
+        ticket:{
+            id:ticketId,
+            price:ticketresult.price
+        }
+    })
+    res.status(201).send(order[0])
     return
     
 }
