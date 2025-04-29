@@ -31,8 +31,8 @@ const DeleteOrder = async(req:Request, res:Response) => {
 
 
 
-    //Publishing an event saying this was cancelled
-    new OrderCancelledPublisher(natsWrapper.client).publish({
+    //Publishing an event saying an order was cancelled
+    await new OrderCancelledPublisher(natsWrapper.client).publish({
         id,
         ticket:{
             id:updatedorder[0].ticket_id

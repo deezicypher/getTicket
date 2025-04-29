@@ -46,7 +46,7 @@ const NewOrder = async (req:Request, res:Response) => {
 
     // Publish an event saying an order was created
    
-    new OrderCreatedPublisher(natsWrapper.client).publish({
+    await new OrderCreatedPublisher(natsWrapper.client).publish({
         id:order[0].id,
         status:OrderStatus.Created,
         user_id: String(req.user?.id),
@@ -56,6 +56,7 @@ const NewOrder = async (req:Request, res:Response) => {
             price:ticketresult.price
         }
     })
+  
     res.status(201).send(order[0])
     return
     

@@ -59,11 +59,9 @@ it('Emits an order created event', async() => {
         .set('Cookie', cookie)
         .send({ticketId})
         .expect(201)
-    
-    console.log('Mock calls:', natsWrapper.client.publish.mock.calls);
+   
 
-    expect(natsWrapper.client.publish).toHaveBeenCalled();
-    expect(natsWrapper.client.publish.mock.calls.length).toBeGreaterThan(0);
+      expect(natsWrapper.client.publish).toHaveBeenCalled();
         
 })
 
