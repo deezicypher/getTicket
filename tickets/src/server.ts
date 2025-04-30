@@ -26,6 +26,7 @@ const start = async () => {
             id SERIAL PRIMARY KEY,
             title VARCHAR(225) NOT NULL,
             price DECIMAL(10,2) NOT NULL,
+            version INTEGER,
             user_id INTEGER NOT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
           );
