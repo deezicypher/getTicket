@@ -25,10 +25,10 @@ export const CreateTicket = async (req:Request, res:Response) => {
     const id = req.user?.id
 
     // the insert ticket query
-    const q = 'INSERT INTO tickets (title,price,user_id,version) VALUES ($1,$2,$3,$4) RETURNING *'
+    const q = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
 
     // use await to handle the query and store the result in a variable
-    const {rows} = await pool.query(q,[normalizedTitle,price,id,0])
+    const {rows} = await pool.query(q,[normalizedTitle,price,id])
     new TicketCreatedPublisher(natsWrapper.client).publish({
         id:rows[0].id,
         title: rows[0].title,
