@@ -1,6 +1,8 @@
 import { app } from "./app";
 import pool from "./config/db"
 import { natsWrapper } from "./nats-wrapper";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 
 const start = async () => {
   if(!process.env.NODE_ENV) {
@@ -19,6 +21,10 @@ const start = async () => {
   })
   process.on('SIGINT', () => natsWrapper.client.close())
   process.on('SIGTERM', () => natsWrapper.client.close())
+
+  new TicketCreatedListener(natsWrapper.client).listen()
+  new TicketUpdatedListener(natsWrapper.client).listen()
+  
     await pool.connect()
     console.log("Connected to DB")
       const createTableQuery = `
@@ -32,10 +38,10 @@ const start = async () => {
           );
 
           CREATE TABLE IF NOT EXISTS tickets (
-            id SERIAL PRIMARY KEY,
+            id INTEGER NOT NULL,
             title VARCHAR(225) NOT NULL,
             price DECIMAL(10,2) NOT NULL,
-            version INTEGER NOT NULL
+            version INTEGER NOT NULL,
           )
         `;
         

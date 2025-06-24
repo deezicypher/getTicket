@@ -4,6 +4,7 @@ import pool from "../config/db";
 import { TicketCreatedPublisher } from "../events/publishers/ticket-created-publisher";
 import { TicketUpdatedPublisher } from "../events/publishers/ticket-updated_publisher";
 import { natsWrapper } from "../nats-wrapper";
+import { version } from "node-nats-streaming";
 
 
 export const CreateTicket = async (req:Request, res:Response) => {
@@ -32,7 +33,7 @@ export const CreateTicket = async (req:Request, res:Response) => {
         id:rows[0].id,
         title: rows[0].title,
         price: rows[0].price,
-        
+        version:rows[0].version
     })
     res.status(201).send(rows[0])
     return
@@ -132,6 +133,12 @@ export const UpdateTicket = async (req:Request, res:Response) => {
                  return
             }
 
+            let version = rows[0].version
+            version++
+            updateQuery += `version = $${paramIndex}, `
+            updateParams.push(version)
+            paramIndex++
+
             // Remove the trailing comma and space from the update query
             updateQuery = updateQuery.slice(0,-2);
 
@@ -146,7 +153,8 @@ export const UpdateTicket = async (req:Request, res:Response) => {
                 id:updatedTicket.id,
                 title:updatedTicket.title,
                 price:updatedTicket.price,
-                user_id:updatedTicket.user_id
+                user_id:updatedTicket.user_id,
+                version
             })
             res.send(updatedTicket);
             return;
