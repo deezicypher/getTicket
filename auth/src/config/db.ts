@@ -1,4 +1,7 @@
 import { Pool } from 'pg';
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const poolConfig = process.env.NODE_ENV === 'test'
 ? {

@@ -1,5 +1,4 @@
 node_modules
 pnpm*
-sendMail.ts
 .next
 .env
