@@ -6,6 +6,7 @@ export interface TicketUpdated{
         id:string;
         title:string;
         price:number;
+        user_id:string;
         version:number;
     }
 }

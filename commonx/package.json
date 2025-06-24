@@ -1,6 +1,6 @@
 {
   "name": "@xgettickets/common",
-  "version": "1.0.8",
+  "version": "1.0.13",
   "description": "",
   "main": "build/server.js",
   "types": "build/server.d.ts",
