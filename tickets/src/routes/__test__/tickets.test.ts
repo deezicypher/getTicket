@@ -269,3 +269,28 @@ it('it publishes an event on update', async () => {
 
     expect(natsWrapper.client.publish).toHaveBeenCalled();
 })
+
+//optimistic concurrency control
+
+it('It increments the version number on multiple saves', async () => {
+  const cookie = signin()
+  const ticket = await request(app)
+      .post('/api/tickets')
+      .set('Cookie',cookie)
+      .send({
+        title:'Hoodflick',
+        price:30.00,
+        user_id: 'native'
+      })
+    expect(ticket.body.version).toEqual(0)
+
+  const updatedTicket = await request(app)
+      .put(`/api/tickets/${ticket.body.id}`)
+      .set('Cookie', cookie)
+      .send({
+        title: 'hoodhigh',
+        price: 45.00
+      })
+    expect(updatedTicket.body.version).toEqual(1)
+
+})

@@ -34,15 +34,15 @@ const NewOrder = async (req:Request, res:Response) => {
         res.status(400).json({error: "Ticket is unavailable"})
         return
     }
-    
+
     // Calculate an expiration date for this order
     const expirationDate = new Date()
     expirationDate.setMinutes(expirationDate.getMinutes() + 15)
 
-
+    let version = 0
     // Build the order and save it to the database
-    const buildq = 'INSERT INTO orders (status,user_id,ticket_id,expires_at) VALUES ($1,$2,$3,$4) RETURNING *'
-    const {rows:order} = await pool.query(buildq,['created',req.user?.id,ticketresult.id,expirationDate])
+    const buildq = 'INSERT INTO orders (status,user_id,version,ticket_id,expires_at) VALUES ($1,$2,$3,$4,$5) RETURNING *'
+    const {rows:order} = await pool.query(buildq,['created',req.user?.id,version,ticketresult.id,expirationDate])
 
     // Publish an event saying an order was created
    
@@ -50,10 +50,11 @@ const NewOrder = async (req:Request, res:Response) => {
         id:order[0].id,
         status:OrderStatus.Created,
         user_id: String(req.user?.id),
+        version,
         expires_at: expirationDate.toISOString(),
         ticket:{
             id:ticketId,
-            price:ticketresult.price
+            price:ticketresult.price,
         }
     })
   

@@ -26,14 +26,17 @@ const DeleteOrder = async(req:Request, res:Response) => {
         res.status(401).json({error:"Unauthorized access"})
         return
     }
-    const uq = "UPDATE orders SET status = 'cancelled' WHERE id = $1 RETURNING *"
-    const {rows:updatedorder} = await pool.query(uq,[id])
+    let version = rows[0].version
+    version++
+    const uq = "UPDATE orders SET version = $1, status = 'cancelled' WHERE id = $2 RETURNING *"
+    const {rows:updatedorder} = await pool.query(uq,[version,id])
 
 
 
     //Publishing an event saying an order was cancelled
     await new OrderCancelledPublisher(natsWrapper.client).publish({
         id,
+        version,
         ticket:{
             id:updatedorder[0].ticket_id
         }
