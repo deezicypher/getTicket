@@ -59,12 +59,12 @@ export const signup = async (req: Request, res: Response) => {
     const url = `${CLIENT_URL}/verify?token=${active_token}`;
 
     // Send a confirmation email 
-    sendEmail(email, url, "Verify your email address", res, email,active_token);
-     //res.status(201).json({
-       //msg: `Confirmation Email sent to ${email}`,
-       //email: email,
-       //token:active_token
-   //})
+    //sendEmail(email, url, "Verify your email address", res, email,active_token);
+     res.status(201).json({
+      msg: `Confirmation Email sent to ${email}`,
+       email: email,
+       token:active_token
+   })
   return 
   
     

@@ -42,7 +42,7 @@ const start = async () => {
             id INTEGER NOT NULL,
             title VARCHAR(225) NOT NULL,
             price DECIMAL(10,2) NOT NULL,
-            version INTEGER NOT NULL DEFAULT 0,
+            version INTEGER NOT NULL DEFAULT 0
           )
         `;
         
