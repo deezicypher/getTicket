@@ -7,5 +7,6 @@ export interface TicketCreated{
         title:string;
         price:number;
         version:number;
+        user_id:number;
     }
 }

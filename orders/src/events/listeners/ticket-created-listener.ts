@@ -8,9 +8,9 @@ export class TicketCreatedListener extends Listener<TicketCreated> {
     queueGroupName = queueGroupName
 
     async onMessage(data: TicketCreated['data'], msg: Message){
-        const {title,id, price,version} = data;
-        const q = "INSERT INTO tickets (id,title,price,version) VALUES ($1,$2,$3,$4)"
-        const {rows} = await pool.query(q,[id,title,price,version])
+        const {title,id, price,version,user_id} = data;
+        const q = "INSERT INTO tickets (id,title,price,version,user_id) VALUES ($1,$2,$3,$4,$5)"
+        const {rows} = await pool.query(q,[id,title,price,version,user_id])
         const ticket = rows[0]
         msg.ack()
     }   

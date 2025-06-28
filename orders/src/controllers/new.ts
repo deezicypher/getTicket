@@ -45,7 +45,7 @@ const NewOrder = async (req:Request, res:Response) => {
     const {rows:order} = await pool.query(buildq,['created',req.user?.id,version,ticketresult.id,expirationDate])
 
     // Publish an event saying an order was created
-   
+
     await new OrderCreatedPublisher(natsWrapper.client).publish({
         id:order[0].id,
         status:OrderStatus.Created,

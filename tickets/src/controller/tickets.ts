@@ -33,7 +33,8 @@ export const CreateTicket = async (req:Request, res:Response) => {
         id:rows[0].id,
         title: rows[0].title,
         price: rows[0].price,
-        version:rows[0].version
+        version:rows[0].version,
+        user_id:id!
     })
     res.status(201).send(rows[0])
     return

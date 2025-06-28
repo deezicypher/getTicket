@@ -2,7 +2,7 @@ import request from "supertest"
 import { app } from "../../app"
 import { signin } from "../../utils/test/signin";
 import {pool} from "../../test/testSetup";
-import { natsWrapper } from "../../__mocks__/nats-wrapper";
+import { natsWrapper } from "../../nats-wrapper";
 
 
 
@@ -21,8 +21,8 @@ it('returns an error if the ticket does not exist', async () => {
 it('returns an error if the ticket is already reserved', async () => {
     const cookie = signin();
 
-    const ticketq = 'INSERT INTO tickets (title,price) VALUES ($1,$2) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200])
+    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
+    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
     const ticketId = rows[0].id
     const orderq = 'INSERT INTO orders (status,user_id,ticket_id,expires_at) VALUES ($1,$2,$3,$4) RETURNING *'
     const expirationDate = new Date()
@@ -38,8 +38,8 @@ it('returns an error if the ticket is already reserved', async () => {
 
 it('reserves a ticket', async () => {
     const cookie = signin();
-    const ticketq = 'INSERT INTO tickets (title,price) VALUES ($1,$2) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200])
+    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
+    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
     const ticketId = rows[0].id
     await request(app)
         .post('/api/orders')
@@ -51,25 +51,29 @@ it('reserves a ticket', async () => {
 
 it('Emits an order created event', async() => {
     const cookie = signin();
-    const ticketq = 'INSERT INTO tickets (title,price) VALUES ($1,$2) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200])
+    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
+    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
     const ticketId = rows[0].id
     await request(app)
         .post('/api/orders')
         .set('Cookie', cookie)
         .send({ticketId})
         .expect(201)
-   
-
-      expect(natsWrapper.client.publish).toHaveBeenCalled();
         
+      
+        expect(natsWrapper.client.publish).toHaveBeenCalled();
+        
+   
+          
+        
+     
 })
 
 //Index Test
 
 const buildTicket = async () => {
-    const ticketq = 'INSERT INTO tickets (title,price) VALUES ($1,$2) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200])
+    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
+    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
    return rows[0].id
 }
 it('fetches orders from a particular user', async () => {
@@ -224,3 +228,5 @@ it('it emits an order cancelled event', async() => {
 
     expect(natsWrapper.client.publish).toHaveBeenCalled()
 })
+
+

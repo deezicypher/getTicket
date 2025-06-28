@@ -61,6 +61,7 @@ export const setupTestDb = async (): Promise<void> => {
         status VARCHAR(225) NOT NULL,
         user_id INTEGER NOT NULL,
         ticket_id INTEGER NOT NULL,
+        version INTEGER NOT NULL DEFAULT 0,
         expires_at TIMESTAMPTZ NOT NULL, 
         created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
       );
@@ -69,7 +70,8 @@ export const setupTestDb = async (): Promise<void> => {
         id SERIAL PRIMARY KEY,
         title VARCHAR(225) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
-        version INTEGER 
+        version INTEGER NOT NULL DEFAULT 0,
+        user_id INTEGER NOT NULL
       );
     `;
     await pool.query(createTableQuery);
