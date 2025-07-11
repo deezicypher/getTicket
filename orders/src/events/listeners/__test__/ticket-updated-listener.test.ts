@@ -12,17 +12,16 @@ const setup = async () => {
     // create and save a ticket
     const tdata = {
         version:0,
-        id:'2',
         title:'hoodflick',
         price:10.00,
         user_id:'1',
     }
-    const q = "INSERT INTO tickets (id,title,price,version,user_id) VALUES ($1,$2,$3,$4,$5) RETURNING *"
-    const {rows} = await pool.query(q,[tdata.id,tdata.title,tdata.price,tdata.version,tdata.user_id])
+    const q = "INSERT INTO tickets (title,price,version,user_id) VALUES ($1,$2,$3,$4) RETURNING *"
+    const {rows} = await pool.query(q,[tdata.title,tdata.price,tdata.version,tdata.user_id])
     const ticket = rows[0]
     // create a fake data object
     const data : TicketUpdated['data'] = {
-        id:ticket.id,
+        id:'1',
         version: ticket.version  + 1,
         title:'Hood Slick',
         price:50.00,

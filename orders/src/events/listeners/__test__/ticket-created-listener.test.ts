@@ -9,9 +9,9 @@ const setup = async () => {
     const listener = new TicketCreatedListener(natsWrapper.client)
 
     // create a fake data event
-    const data: TicketCreated['data'] = {
-        version:0,
+    const data:TicketCreated['data'] = {
         id:'1',
+        version:0,
         title:'hoodflick',
         price:10.00,
         user_id:'1',
