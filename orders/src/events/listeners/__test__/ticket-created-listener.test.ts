@@ -2,7 +2,7 @@ import { TicketCreated } from "@xgettickets/common"
 import { TicketCreatedListener } from "../ticket-created-listener"
 import { natsWrapper } from "../../../nats-wrapper"
 import { Message } from "node-nats-streaming"
-import pool from "../../../config/db"
+import { pool } from "../../../test/testSetup"
 
 const setup = async () => {
     // creates an instance of the listener

@@ -54,6 +54,7 @@ const tableExists = async (tableName: string): Promise<boolean> => {
 // Function to setup the test database
 export const setupTestDb = async (): Promise<void> => {
   try {
+ 
     // Create tables if they don't exist
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS orders (
@@ -76,6 +77,7 @@ export const setupTestDb = async (): Promise<void> => {
     `;
     await pool.query(createTableQuery);
   } catch (error) {
+    console.log(pool)
     console.log(error)
     throw new DatabaseError('Failed to setup test database', error);
   }

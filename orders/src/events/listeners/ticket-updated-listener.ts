@@ -9,6 +9,7 @@ export class TicketUpdatedListener extends Listener<TicketUpdated> {
 
     async onMessage(data: TicketUpdated['data'], msg: Message){
         const {title, price, id,version} = data
+     
             const q = "SELECT * FROM tickets WHERE id = $1"
             const {rows} = await pool.query(q,[id])
             if(rows.length === 0 ){
@@ -24,7 +25,7 @@ export class TicketUpdatedListener extends Listener<TicketUpdated> {
             }
 
             const updateq = "UPDATE tickets SET title = $1, price = $2, version = $3 WHERE id = $4"
-            await pool.query(updateq, [title, price, id,version])
+            await pool.query(updateq, [title, price,version,id])
             msg.ack()
             
     }   
