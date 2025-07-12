@@ -26,12 +26,14 @@ const DeleteOrder = async(req:Request, res:Response) => {
         res.status(401).json({error:"Unauthorized access"})
         return
     }
-    let version = rows[0].version
-    version++
-    const uq = "UPDATE orders SET version = $1, status = 'cancelled' WHERE id = $2 RETURNING *"
-    const {rows:updatedorder} = await pool.query(uq,[version,id])
+    const version = rows[0].version
+    const uq = "UPDATE orders SET version = version + 1, status = 'cancelled' WHERE id = $1 AND version = $2 RETURNING *"
+    const {rows:updatedorder} = await pool.query(uq,[id,version])
 
-
+    if (updatedorder.length === 0) {
+        return res.status(409).json({ error: "Conflict: Order was modified by another process" });
+      }
+      
 
     //Publishing an event saying an order was cancelled
     await new OrderCancelledPublisher(natsWrapper.client).publish({

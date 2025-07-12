@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import { signin } from "../../utils/test/signin";
 import { natsWrapper } from "../../nats-wrapper";
+import { pool } from "../../test/testSetup";
 
 
 
@@ -268,6 +269,28 @@ it('it publishes an event on update', async () => {
             expect(ticketResponse.body.price).toEqual("45.00");
 
     expect(natsWrapper.client.publish).toHaveBeenCalled();
+})
+
+it('rejects updates if the ticket is reserved', async () => {
+  const cookie = signin()
+  const response = await request(app)
+      .post('/api/tickets')
+      .set('Cookie',cookie)
+      .send({
+        title:'Hoodflick',
+        price:30.00
+      })
+    const updateQ = "UPDATE tickets SET order_id = $1 WHERE id = $2  RETURNING *"
+    await pool.query(updateQ,['1',response.body.id])
+      
+  await request(app)
+      .put(`/api/tickets/${response.body.id}`)
+      .set('Cookie', cookie)
+      .send({
+        title: 'hoodhigh',
+        price: 45.00
+      })
+      .expect(409)
 })
 
 //optimistic concurrency control

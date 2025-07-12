@@ -1,6 +1,8 @@
 import { app } from "./app";
 import pool from "./config/db"
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
 
 const start = async () => {
   if(!process.env.NODE_ENV) {
@@ -17,8 +19,12 @@ const start = async () => {
       console.log('NATS connection closed')
       process.exit()
   })
-  process.on('SIGINT', () => natsWrapper.client.close())
-  process.on('SIGTERM', () => natsWrapper.client.close())
+  process.on('SIGINT', () => natsWrapper.client.close());
+  process.on('SIGTERM', () => natsWrapper.client.close());
+
+  new  OrderCreatedListener(natsWrapper.client).listen();
+  new  OrderCancelledListener(natsWrapper.client).listen();
+
     await pool.connect()
     console.log("Connected to DB")
       const createTableQuery = `
@@ -27,6 +33,7 @@ const start = async () => {
             title VARCHAR(225) NOT NULL,
             price DECIMAL(10,2) NOT NULL,
             version INTEGER NOT NULL DEFAULT 0,
+            order_id VARCHAR(225),
             user_id INTEGER NOT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
           );
