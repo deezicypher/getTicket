@@ -40,3 +40,12 @@ build:
         manual:
           - dest: .
             src: 'src/**/*.tsx'
+
+    - image: deezicypher/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: 'src/**/*.tsx'
