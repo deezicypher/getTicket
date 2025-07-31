@@ -31,7 +31,8 @@ const DeleteOrder = async(req:Request, res:Response) => {
     const {rows:updatedorder} = await pool.query(uq,[id,version])
 
     if (updatedorder.length === 0) {
-        return res.status(409).json({ error: "Conflict: Order was modified by another process" });
+         res.status(409).json({ error: "Conflict: Order was modified by another process" });
+         return
       }
       
 

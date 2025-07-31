@@ -37,7 +37,7 @@ const NewOrder = async (req:Request, res:Response) => {
 
     // Calculate an expiration date for this order
     const expirationDate = new Date()
-    expirationDate.setMinutes(expirationDate.getMinutes() + 15)
+    expirationDate.setMinutes(expirationDate.getMinutes() + 1)
 
     let version = 0
     // Build the order and save it to the database
