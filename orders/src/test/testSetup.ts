@@ -77,7 +77,7 @@ export const setupTestDb = async (): Promise<void> => {
     `;
     await pool.query(createTableQuery);
   } catch (error) {
-    console.log(pool)
+   
     console.log(error)
     throw new DatabaseError('Failed to setup test database', error);
   }

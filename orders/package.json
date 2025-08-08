@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^5.0.2",
-    "@xgettickets/common": "^1.0.19",
+    "@xgettickets/common": "^1.0.21",
     "bcrypt": "^5.1.1",
     "cookie-session": "^2.1.0",
     "dotenv": "^16.4.7",
