@@ -14,6 +14,7 @@ const NewOrder = async (req:Request, res:Response) => {
     }
 
     // Find the ticket the user is trying to order in the database
+    try{
     const {ticketId} = req.body
 
     const ticketq = "SELECT * from tickets WHERE id = $1"
@@ -60,6 +61,9 @@ const NewOrder = async (req:Request, res:Response) => {
   
     res.status(201).send(order[0])
     return
+}catch(err) {
+    console.log(err)
+}
     
 }
 

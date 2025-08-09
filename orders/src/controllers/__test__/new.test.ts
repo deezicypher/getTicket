@@ -21,8 +21,8 @@ it('returns an error if the ticket does not exist', async () => {
 it('returns an error if the ticket is already reserved', async () => {
     const cookie = signin();
 
-    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
+    const ticketq = 'INSERT INTO tickets (id,title,price,user_id) VALUES ($1,$2,$3,$4) RETURNING *'
+    const {rows} = await pool.query(ticketq,['1','hoodzone',200,1])
     const ticketId = rows[0].id
     const orderq = 'INSERT INTO orders (status,user_id,ticket_id,expires_at) VALUES ($1,$2,$3,$4) RETURNING *'
     const expirationDate = new Date()
@@ -38,8 +38,8 @@ it('returns an error if the ticket is already reserved', async () => {
 
 it('reserves a ticket', async () => {
     const cookie = signin();
-    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
+    const ticketq = 'INSERT INTO tickets (id,title,price,user_id) VALUES ($1,$2,$3,$4) RETURNING *'
+    const {rows} = await pool.query(ticketq,['1','hoodzone',200,1])
     const ticketId = rows[0].id
     await request(app)
         .post('/api/orders')
@@ -51,8 +51,8 @@ it('reserves a ticket', async () => {
 
 it('Emits an order created event', async() => {
     const cookie = signin();
-    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
+    const ticketq = 'INSERT INTO tickets (id,title,price,user_id) VALUES ($1,$2,$3,$4) RETURNING *'
+    const {rows} = await pool.query(ticketq,['1','hoodzone',200,1])
     const ticketId = rows[0].id
     await request(app)
         .post('/api/orders')

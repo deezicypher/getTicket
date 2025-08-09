@@ -6,8 +6,8 @@ import { natsWrapper } from "../../nats-wrapper";
 
 
 const buildTicket = async () => {
-    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
+    const ticketq = 'INSERT INTO tickets (id,title,price,user_id) VALUES ($1,$2,$3,$4) RETURNING *'
+    const {rows} = await pool.query(ticketq,['1','hoodzone',200,1])
    return rows[0].id
 }
 

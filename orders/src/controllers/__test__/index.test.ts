@@ -5,8 +5,8 @@ import {pool} from "../../test/testSetup";
 
 
 const buildTicket = async () => {
-    const ticketq = 'INSERT INTO tickets (title,price,user_id) VALUES ($1,$2,$3) RETURNING *'
-    const {rows} = await pool.query(ticketq,['hoodzone',200,1])
+    const ticketq = 'INSERT INTO tickets (id,title,price,user_id) VALUES ($1,$2,$3,$4) RETURNING *'
+    const {rows} = await pool.query(ticketq,[1,'hoodzone',200,1])
    return rows[0].id
 }
 
@@ -20,11 +20,15 @@ it('fetches orders from a particular user', async () => {
     const user2 = signin();
 
     //create one order as user #1
+    
+
     await request(app)
         .post('/api/orders')
         .set('Cookie', user1)
         .send({ticketId:ticket1})
         .expect(201)
+
+    
     
      //create two orders as user #2
     const {body:order1} = await request(app)
@@ -49,5 +53,6 @@ it('fetches orders from a particular user', async () => {
     // Order list is Ordered By DESC
     expect(res.body[1].id).toEqual(order1.id)
     expect(res.body[0].id).toEqual(order2.id)
+
 
 })

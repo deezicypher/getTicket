@@ -68,7 +68,7 @@ export const setupTestDb = async (): Promise<void> => {
       );
 
       CREATE TABLE IF NOT EXISTS tickets (
-        id SERIAL PRIMARY KEY,
+        id INTEGER NOT NULL,
         title VARCHAR(225) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
         version INTEGER NOT NULL DEFAULT 0,
