@@ -49,3 +49,12 @@ build:
         manual:
           - dest: .
             src: 'src/**/*.tsx'
+
+    - image: deezicypher/payments
+      context: payments
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: 'src/**/*.tsx'
