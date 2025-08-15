@@ -1,6 +1,8 @@
 import { app } from "./app";
 import pool from "./config/db"
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";
 
 const start = async () => {
   if(!process.env.NODE_ENV) {
@@ -20,6 +22,8 @@ const start = async () => {
   process.on('SIGINT', () => natsWrapper.client.close());
   process.on('SIGTERM', () => natsWrapper.client.close());
 
+  new OrderCreatedListener(natsWrapper.client).listen();
+  new OrderCancelledListener(natsWrapper.client).listen();
 
     await pool.connect()
     console.log("Connected to DB")
