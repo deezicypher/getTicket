@@ -25,7 +25,7 @@ class DatabaseError extends Error {
 
 // Create a new pool for the test database
 const config: DatabaseConfig = {
-  connectionString: process.env.DATABASE_URL || '',
+  connectionString: process.env.TEST_DATABASE_URL || '',
 };
 
 if (!config.connectionString) {

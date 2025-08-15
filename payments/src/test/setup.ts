@@ -1,10 +1,15 @@
-import { setupTestDb, clearTestData, tearDownTestDb, pool } from './testSetup';
-import request from 'supertest';
-import { app } from '../app';
+import { setupTestDb, clearTestData, tearDownTestDb } from './testSetup';
+
+jest.mock('../config/db', () => {
+  const { pool } = require('./testSetup');
+  return { __esModule: true, default: pool } 
+});
 
 beforeAll(async () => {
   await setupTestDb();
 });
+
+
 jest.mock('../nats-wrapper')
 
 afterAll(async () => {
