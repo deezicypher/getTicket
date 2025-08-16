@@ -34,6 +34,7 @@ const start = async () => {
             price DECIMAL(10,2) NOT NULL,
             version INTEGER NOT NULL DEFAULT 0,
             user_id INTEGER NOT NULL,
+            order_id INTEGER ,
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
           );
         `;

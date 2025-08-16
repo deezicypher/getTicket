@@ -1,5 +1,6 @@
 import express,{Request,Response,NextFunction} from "express"
 import cookieSession from "cookie-session"
+import paymentRouter from './routes/payments'
 import { verifyToken } from "@xgettickets/common"
 import dotenv from 'dotenv'
 dotenv.config()
@@ -13,6 +14,8 @@ app.use(cookieSession({
 }))
 
 //app.use(verifyToken)
+
+app.use('/api/payments', paymentRouter )
 
 app.all('*', (req: Request, res: Response) => {
   res.status(404).json({ error: "Route Not Found" });

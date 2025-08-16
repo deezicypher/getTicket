@@ -59,7 +59,7 @@ export const setupTestDb = async (): Promise<void> => {
         title VARCHAR(225) NOT NULL,
         price DECIMAL(10,2) NOT NULL,
         version INTEGER NOT NULL DEFAULT 0,
-        order_id VARCHAR(225),
+        order_id INTEGER,
         user_id INTEGER NOT NULL,
         created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
       );

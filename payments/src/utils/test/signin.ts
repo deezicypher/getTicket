@@ -9,9 +9,9 @@ function generateID(){
   return currentID
 }
 
-export const signin = () => {
+export const signin = (id?:number) => {
     // Build a JWT payload, {id}
-    const payload = {id: generateID()}
+    const payload = {id: id||generateID()}
     // Create the JWT!
     const token = jwt.sign(payload, `${process.env.ACCESS_TOKEN_SECRET}`);
 

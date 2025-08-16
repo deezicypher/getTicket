@@ -29,7 +29,7 @@ spec:
             - name: NODE_ENV
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
+                  name: app-secret
                   key: EXP_NODE_ENV
 
 

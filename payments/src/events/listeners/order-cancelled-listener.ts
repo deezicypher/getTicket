@@ -17,8 +17,8 @@ export class OrderCancelledListener extends Listener<OrderCancelledEvent> {
             throw new Error('Order not found')
         }
 
-        const cancelOrderQ = "UPDATE orders SET status= $1 WHERE id = $2"
-        await pool.query(cancelOrderQ,[OrderStatus.Cancelled,id])
+        const cancelOrderQ = "UPDATE orders SET status= $1,version=$2 WHERE id = $3"
+        await pool.query(cancelOrderQ,[OrderStatus.Cancelled,version,id])
         msg.ack()
 
     }
