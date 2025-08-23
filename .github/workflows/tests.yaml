@@ -24,4 +24,4 @@ jobs:
             - run: cd auth && npm install && npm run test:ci
               env:
                 DATABASE_URL: postgres://postgres:postgres@localhost:5432/auth_test
-                NODE_ENV: test
+                NODE_ENV: dev
