@@ -33,7 +33,7 @@ if (!config.connectionString) {
 }
 
 const pool = new Pool(config);
-
+console.log('pool: ',pool)
 // Function to check if table exists
 const tableExists = async (tableName: string): Promise<boolean> => {
   try {
