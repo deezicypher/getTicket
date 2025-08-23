@@ -23,5 +23,6 @@ jobs:
             - uses: actions/checkout@v4
             - run: cd payments && npm install && npm run test:ci
               env:
-                DATABASE_URL: postgres://postgres:postgres@localhost:5432/auth_test
+                DATABASE_URL: ${{ secrets.DATABASE_URL }}
                 NODE_ENV: test
+                STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
