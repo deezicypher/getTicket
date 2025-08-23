@@ -10,6 +10,7 @@ const start = async () => {
 }
   try {
     await pool.connect()
+    console.log('Starting application')
     console.log("Connected to DB")
     await pool.query(`CREATE TABLE IF NOT EXISTS "users" (
       "id" SERIAL PRIMARY KEY,

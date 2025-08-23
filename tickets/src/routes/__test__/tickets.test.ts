@@ -2,7 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import { signin } from "../../utils/test/signin";
 import { natsWrapper } from "../../nats-wrapper";
-import { pool } from "../../test/testSetup";
+import pool from "../../config/db";
 
 
 
@@ -98,7 +98,7 @@ it('returns a 422 if ticket id is not a number', async () => {
 it('returns the ticket if the ticket is found', async () => {
   const cookie = signin()
   const title = 'hoodflick'
-  const price = "20.00" 
+  const price = 20 
   const response = await request(app)
   .post('/api/tickets/')
   .set('Cookie', cookie)
@@ -229,7 +229,7 @@ it('updates the tickets, provided valid title or price', async () => {
       .set('Cookie', cookie)
       .send({
         title: 'hoodhigh',
-        price: 45.00
+        price: 45
       })
       .expect(200)
 
@@ -238,7 +238,7 @@ it('updates the tickets, provided valid title or price', async () => {
             .send();
 
             expect(ticketResponse.body.title).toEqual('hoodhigh')
-            expect(ticketResponse.body.price).toEqual("45.00")
+            expect(ticketResponse.body.price).toEqual(45)
 
 
 })
@@ -258,7 +258,7 @@ it('it publishes an event on update', async () => {
       .set('Cookie', cookie)
       .send({
         title: 'hoodhigh',
-        price: 45.00
+        price: 45
       })
       .expect(200)
 
@@ -266,7 +266,7 @@ it('it publishes an event on update', async () => {
             .get(`/api/tickets/${response.body.id}`) 
             .send();
             expect(ticketResponse.body.title).toEqual('hoodhigh')
-            expect(ticketResponse.body.price).toEqual("45.00");
+            expect(ticketResponse.body.price).toEqual(45);
 
     expect(natsWrapper.client.publish).toHaveBeenCalled();
 })

@@ -30,6 +30,7 @@ const start = async () => {
   new PaymentCreatedListener(natsWrapper.client).listen()
   
     await pool.connect()
+    console.log('Starting app...')
     console.log("Connected to DB")
       const createTableQuery = `
           CREATE TABLE IF NOT EXISTS orders (

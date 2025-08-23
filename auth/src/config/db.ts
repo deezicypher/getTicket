@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const poolConfig = process.env.NODE_ENV === 'test'
+const poolConfig = process.env.NODE_ENV === 'dev'
 ? {
     connectionString: process.env.DATABASE_URL, // Use connection string for testing
   }
