@@ -1,6 +1,6 @@
 import { OrderCancelledListener } from "../order-cancelled-listener";
 import { natsWrapper } from "../../../nats-wrapper";
-import { pool } from "../../../test/testSetup";
+import pool  from "../../../config/db";
 import { OrderCancelledEvent } from "@xgettickets/common";
 import { Message } from "node-nats-streaming";
 
