@@ -36,6 +36,12 @@ const start = async () => {
             price DECIMAL(10,2) NOT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
           );
+
+          CREATE TABLE IF NOT EXISTS payments (
+            id SERIAL PRIMARY KEY,
+            order_id INTEGER NOT NULL,
+            stripe_id VARCHAR(225) NOT NULL
+          );
         `;
         await pool.query(createTableQuery);
         console.log("Created Orders table")

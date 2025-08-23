@@ -43,7 +43,7 @@ Forgot Password
         <div>
           <button
             type='submit'
-            className="group relative flex w-full justify-center rounded-md bg-gradient-to-r from-[#408ffe] to-[#1764f4]  py-2 px-4 text-sm font-medium text-white focus:outline-none focus:ring-2  focus:ring-offset-2"
+            className="cursor-pointer group relative flex w-full justify-center rounded-md bg-gradient-to-r from-[#408ffe] to-[#1764f4]  py-2 px-4 text-sm font-medium text-white focus:outline-none focus:ring-2  focus:ring-offset-2"
           >
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
   

@@ -33,4 +33,37 @@ export interface AuthContextProps {
     user:User;
     setUser:Dispatch<SetStateAction<User>>;
     logout: UseMutationResult<any, Error, void, unknown>;
+    authCheckState: UseMutationResult<any, Error, void, unknown>;
+    getUserLoading:boolean;
+}
+
+// Ticket
+
+export interface TicketInputs{
+    title: string;
+    price: number;
+}
+
+export interface TicketContextProps {
+    createTicket: UseMutationResult<any, any, TicketInputs, unknown>; 
+    getTickets:  UseMutationResult<any, Error,  string | undefined, unknown>;
+    tickets: Record<string, any>;
+    getTicket:  UseMutationResult<any, Error, string | undefined, unknown>;
+    ticket: Record<string, any>;
+    ticketLoading: boolean;
+    searchTicket:  UseMutationResult<Record<string, any>[], Error, string, unknown>;
+    searchedTicket: Record<string, any>;
+    setSearchedTicket: Dispatch<SetStateAction<Record<string, any>[]>>;
+
+}
+
+// Orders
+
+export interface OrderContextProps {
+    order: Record<string, any>;
+    postOrder:UseMutationResult<any, Error, string | undefined, unknown>;
+    getOrder: UseMutationResult<any, Error, string | undefined, unknown>;
+    postPayment:UseMutationResult<any, any, { token: string; orderId: string; }, unknown>;
+    orders: Record<string, any>;
+    getOrders: UseMutationResult<any, Error, void, unknown>;
 }

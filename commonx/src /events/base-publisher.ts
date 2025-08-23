@@ -7,6 +7,8 @@ interface Event {
     data: any
 }
 
+// T is a generic type parameter (a placeholder for a type you’ll specify later).
+// extends Event means “whatever type replaces T must be a subtype of Event (or exactly Event)
 
 export abstract class Publisher<T extends Event> {
     abstract subject: T['subject']

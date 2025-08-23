@@ -71,11 +71,40 @@ export const GetTicket = async (req:Request, res:Response) => {
 }
 
 export const GetTickets = async (req:Request, res:Response) => {
+    const {userId,searchId} = req.query
+   
+
+
     try {
         // retrieve tickets query
-        const q = "SELECT * FROM tickets"
+        let q = "SELECT * FROM tickets  "
+        let params: (string | number) [] = []
+        let conditions: string[] = [];
+        let paramIndex = 1
+
+        if (userId && !isNaN(Number(userId))) {
+            conditions.push(` WHERE user_id = $${paramIndex}`);
+            params.push(Number(userId)); 
+            paramIndex++
+          }else{
+            conditions.push('order_id is NULL')
+          }
+    
+        if (searchId && String(searchId).trim() !== "") {
+            conditions.push(` title ILIKE $${paramIndex}`);
+            params.push(`%${searchId}%`);
+            paramIndex++ 
+          }
+        
+        if (conditions.length > 0) {
+            q += " WHERE " + conditions.join(" AND ");
+        }
+        
+      
+        q += " ORDER BY created_at DESC"
+
         // use await to wait for the result and get the rows
-        const {rows} =  await pool.query(q)
+        const {rows} =  await pool.query(q,params)
         // send back the result
         res.send(rows)
     } catch (error) {

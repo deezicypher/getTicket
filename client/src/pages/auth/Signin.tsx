@@ -90,7 +90,7 @@ const Signin = () => {
         <div>
           <button
             type="submit"
-            className="group relative flex w-full justify-center rounded-md bg-gradient-to-r from-[#408ffe] to-[#1764f4]  py-2 px-4 text-sm font-poppins text-white focus:outline-none "
+            className="cursor-pointer group relative flex w-full justify-center rounded-md bg-gradient-to-r from-[#408ffe] to-[#1764f4]  py-2 px-4 text-sm font-poppins text-white focus:outline-none "
           >
             {login?.isPending? <img src={loader} alt='' className="h-4" />
             :

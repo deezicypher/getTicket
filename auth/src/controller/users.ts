@@ -126,7 +126,7 @@ const normalizedName = name.toLowerCase().trim();
 
   } catch (err) {
     // Catch any error that happens during the process
-    console.error(err);
+    //console.error(err);
     if(err instanceof Jwt.TokenExpiredError){
        res.status(401).json({error: 'Token Expired'})
        return

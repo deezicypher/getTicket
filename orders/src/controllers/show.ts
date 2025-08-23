@@ -12,7 +12,16 @@ const ShowOrder = async (req:Request, res:Response) => {
     }
 
     try{
-        const q = 'SELECT * FROM orders WHERE id = $1'
+        const q = `SELECT o.*,
+            json_build_object(
+        'id',t.id,
+        'title', t.title,
+        'price', t.price
+    ) AS ticket
+        FROM orders o LEFT JOIN tickets t on t.id = o.ticket_id 
+        WHERE o.id = $1
+        ORDER BY o.created_at DESC
+        `
        
         const {rows} = await pool.query(q,[id])
 

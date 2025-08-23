@@ -3,18 +3,21 @@ import React, {createContext, useContext, useEffect, useState} from 'react'
 import {  useMutation } from '@tanstack/react-query';
 import { AuthContextProps, LoginFormData, ResetPassProps, SignupFormData } from '../types';
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getAPI, postAPI } from '../utils/fetchData';
 import Cookies from 'js-cookie'
 
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
-export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
+export const AuthProvider = ({children}:{children:React.ReactNode}) => {
       const navigate = useNavigate()
       const [user, setUser] = useState<Record<string,unknown>>({})
-      
+      const [getUserLoading, setGetUserLoading] = useState<boolean>(true)
 
+      const location = useLocation()
+      const from = (location.state as {from?:string})?.from || '/app'
+   
   
     const login = useMutation({
         mutationFn: async (data: LoginFormData) => {
@@ -25,7 +28,8 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
         },
           onSuccess: async (data) => {
             setUser(data.user)
-                return navigate('/app')
+                return navigate(from, { replace: true });
+                
             
           },
           onError: (error: any) => {
@@ -160,10 +164,13 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
     },
     onSuccess:(data)=>{
       setUser(data.user)
+      setGetUserLoading(false)
     },
     onError:(error:any) => {
       console.log(error)
-    }
+      setGetUserLoading(false)
+    },
+ 
   })
   
   useEffect(() => {
@@ -172,7 +179,7 @@ export const AuthContextProvider = ({children}:{children:React.ReactNode}) => {
 
     return (
        <AuthContext.Provider value={{
-        login, signup, getVerify, sendPass, resetPass, user, setUser,logout
+        login, signup, getVerify, sendPass, resetPass, user, setUser,logout, authCheckState, getUserLoading
         }}>
         {children}
        </AuthContext.Provider>

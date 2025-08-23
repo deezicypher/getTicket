@@ -17,6 +17,11 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
         if(!order){
             throw new Error('Order not found')
         }
+
+        if(order.status === OrderStatus.complete){
+            return msg.ack()
+        }
+
         const updateQ = "UPDATE orders SET version = version + 1, status = $1 WHERE id = $2 AND version = $3"
         await pool.query(updateQ,[OrderStatus.Cancelled,data.orderId,order.version])
         await new OrderCancelledPublisher(this.client).publish({

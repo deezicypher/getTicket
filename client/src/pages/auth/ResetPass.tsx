@@ -84,7 +84,7 @@ const ResetPass = () => {
             <div>
               <button
                 type="submit"
-                className="group relative flex w-full sm:min-w-[400px] justify-center bg-gradient-to-r from-[#408ffe] to-[#1764f4]  py-2 px-4 text-sm font-medium text-white focus:outline-none rounded-md"
+                className="cursor-pointer group relative flex w-full sm:min-w-[400px] justify-center bg-gradient-to-r from-[#408ffe] to-[#1764f4]  py-2 px-4 text-sm font-medium text-white focus:outline-none rounded-md"
               >
                   {resetPass.isPending? <img src={loader} alt='' className="h-4" />
                     :

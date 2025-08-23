@@ -3,6 +3,8 @@ import { validationResult } from "express-validator";
 import pool from "../config/db";
 import { OrderStatus } from "@xgettickets/common";
 import { stripe } from "../stripe";
+import { PaymentCreatedPublisher } from "../events/publishers/payment-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 
 export const postPayment = async (req:Request, res:Response ) => {
@@ -32,11 +34,24 @@ export const postPayment = async (req:Request, res:Response ) => {
         return
     }
 
-    await stripe.charges.create({
+    const charge = await stripe.charges.create({
         currency:'usd',
         amount: order.price * 100,
         source: token
+    });
+
+    const paymentQ = "INSERT INTO payments (order_id, stripe_id) VALUES ($1, $2) RETURNING *";
+    const {rows:paymentRow} = await pool.query(paymentQ,[orderId,charge.id]);
+    const payment = paymentRow[0]
+   
+
+    new PaymentCreatedPublisher(natsWrapper.client).publish({
+        id:payment.id,
+        orderId:payment.order_id,
+        stripe_id:payment.stripe_id
     })
-   res.send({success:true})
+   
+  
+   res.status(201).send({id:payment.id})
    return
 }
