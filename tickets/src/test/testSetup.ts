@@ -31,9 +31,10 @@ const config: DatabaseConfig = {
 if (!config.connectionString) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
+console.log(process.env.TEST_DATABASE_URL)
 
 const pool = new Pool(config);
-console.log('pool: ',pool)
+
 // Function to check if table exists
 const tableExists = async (tableName: string): Promise<boolean> => {
   try {
