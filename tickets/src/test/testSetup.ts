@@ -31,7 +31,6 @@ const config: DatabaseConfig = {
 if (!config.connectionString) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
-console.log(process.env.DATABASE_URL)
 
 const pool = new Pool(config);
 
@@ -67,6 +66,7 @@ export const setupTestDb = async (): Promise<void> => {
     `;
     await pool.query(createTableQuery);
   } catch (error) {
+    console.log(error)
     throw new DatabaseError('Failed to setup test database', error);
   }
 };
