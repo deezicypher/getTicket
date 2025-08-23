@@ -25,13 +25,13 @@ class DatabaseError extends Error {
 
 // Create a new pool for the test database
 const config: DatabaseConfig = {
-  connectionString: process.env.TEST_DATABASE_URL || '',
+  connectionString: process.env.DATABASE_URL || '',
 };
 
 if (!config.connectionString) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
-console.log(process.env.TEST_DATABASE_URL)
+console.log(process.env.DATABASE_URL)
 
 const pool = new Pool(config);
 
