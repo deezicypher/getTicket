@@ -45,7 +45,7 @@ it('sets the orderId of the ticket', async () => {
     const {rows} = await pool.query(q,[ticket.id])
     const updatedTicket = rows[0]
     
-    expect(updatedTicket.order_id).toEqual(fdata.id)
+    expect(updatedTicket.order_id).toEqual(Number(fdata.id))
 })
 
 it('acks the message', async () => {
@@ -63,5 +63,5 @@ it('Publishes a ticket updated event', async () => {
     expect(natsWrapper.client.publish).toHaveBeenCalled()
 
     const updatedTicketData =  JSON.parse((natsWrapper.client.publish as jest.Mock).mock.calls[0][1])
-    console.log(updatedTicketData)
+    
 })
